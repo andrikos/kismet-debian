@@ -1,0 +1,35 @@
+#!/usr/bin/make -f
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+export DEB_CFLAGS_MAINT_APPEND = -Wall
+include /usr/share/dpkg/buildflags.mk
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+
+# Make sure the plugins are built without PIE support (they already use PIC
+# since they are shared libraries)
+NOPIEFLAGS := DEB_BUILD_MAINT_OPTIONS=$(DEB_BUILD_MAINT_OPTIONS),-pie dpkg-buildflags --get
+CFLAGS := $(CPPFLAGS) $(shell $(NOPIEFLAGS) CXXFLAGS)
+DEB_CONFIGURE_SCRIPT_ENV += PLUGINLDFLAGS="$(shell $(NOPIEFLAGS) LDFLAGS)"
+
+
+DEB_MAKE_INSTALL_TARGET := suidinstall SUIDGROUP=root
+DEB_MAKE_CLEAN_TARGET :=
+DEB_DH_INSTALL_ARGS_DEFAULT := --fail-missing
+
+DEB_MAKE_ENVVARS := DESTDIR=$(DEB_DESTDIR)
+
+clean::
+	[ ! -f Makefile ] || $(MAKE) plugins-clean
+	[ ! -f Makefile ] || $(MAKE) distclean
+	debconf-updatepo
+	
+configure/kismet::
+	$(MAKE) dep
+
+build/kismet-plugins::
+	$(MAKE) plugins
+
+install/kismet-plugins::
+	$(MAKE) plugins-install $(DEB_MAKE_ENVVARS)
