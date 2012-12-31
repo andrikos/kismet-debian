@@ -74,7 +74,7 @@ License: permissive
 
 Files: tcpdump-extract.h
 Copyright: 1992-1996, The Regents of the University of California.
-License: BSD-3-clause
+License: BSD-4-clause
  Redistribution and use in source and binary forms, with or without
  modification, are permitted provided that: (1) source code distributions
  retain the above copyright notice and this paragraph in its entirety, (2)
