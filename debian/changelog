@@ -5,6 +5,10 @@ kismet (2011.03.R2-1~experimental2) experimental; urgency=low
     - Swedish    (Closes: #697292)
   * Copyright file
     - Updated license for tcpdump-extract.h file
+  * Updated patches
+    - 70_fix_makefile: Fixes Makefile.inc.in to allow for passing compiler
+      options to plugins build environment, useful for hardening
+  * Simplified rules file for easier hardening support
 
  -- Nick Andrik <nick.andrik@gmail.com>  Wed, 13 Feb 2013 22:39:40 +0100
 
