@@ -1,4 +1,5 @@
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# Russian debconf translation of kismet.
+# Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
 #
 # Yuri Kozlov <yuray@komyakino.ru>, 2012.

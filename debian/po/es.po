@@ -1,4 +1,4 @@
-# kismet translation to Spanish
+# Spanish debconf template translation of kismet.
 # Copyright (C) 2012 Software in the Public Interest, SPI Inc.
 # This file is distributed under the same license as the kismet package.
 # Matías Bellone <matiasbellone+debian@gmail.com> , 2012
