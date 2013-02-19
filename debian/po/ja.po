@@ -1,6 +1,6 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Japanese PO debconf template translation of kismet.
+# Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the kismet package.
 # victory <victory.deb@gmail.com>, 2012.
 #
 msgid ""

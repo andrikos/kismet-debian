@@ -1,5 +1,5 @@
 # German debconf translation of kismet.
-# Copyright (C) Mike Kershaw.
+# Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
 # Translation by Chris Leick <c.leick@vollbio.de> 2012.
 #

@@ -1,4 +1,4 @@
-# Danish translation kismet.
+# Danish PO debconf template translation of kismet.
 # Copyright (C) 2012 kismet & nedenstående oversættere.
 # This file is distributed under the same license as the kismet package.
 # Joe Hansen <joedalton2@yahoo.dk>, 2012.

@@ -1,5 +1,5 @@
 # Translation of kismet debconf templates to Polish.
-# Copyright (C) 2012
+# Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
 #
 # Michał Kułach <michal.kulach@gmail.com>, 2012.

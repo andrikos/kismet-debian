@@ -1,4 +1,4 @@
-# Galician translations for kismet package.
+# Galician translations for debconf of kismet package.
 # Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
 #
