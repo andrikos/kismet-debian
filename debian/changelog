@@ -453,8 +453,6 @@ kismet (2.2-1) unstable; urgency=low
   * New upstream release, closes: #144845
   * Pretreated for gcc-3.0
   * Fixed share directory install, closes: #142510
-  * 
-
 
  -- Francois Gurin <matrix@debian.org>  Fri, 17 May 2002 03:37:41 -0400
 
@@ -503,4 +501,3 @@ kismet (1.4-1) unstable; urgency=low
   * Initial Release.
 
  -- root <matrix@debian.org>  Sun,  3 Feb 2002 15:49:25 -0500
-
