@@ -6,13 +6,14 @@ Maintainer: Nick Andrik <nick.andrik@gmail.com>
 Vcs-Git: git://github.com/andrikos/kismet-debian.git
 Vcs-Browser: http://github.com/andrikos/kismet-debian
 Build-Depends: cdbs, debhelper(>=9), dpkg-dev (>= 1.16.1~), po-debconf,
- autotools-dev, libncurses5-dev, libpcap-dev, libpcre3-dev, libcap-dev,
- libnl-genl-3-dev, pkg-config, libbluetooth-dev, libusb-dev, libssl-dev
+ autotools-dev, libncurses5-dev, libpcap-dev, libpcre3-dev, libnl-genl-3-dev,
+ pkg-config, libbluetooth-dev, libusb-dev, libssl-dev,
+ libcap-dev [linux-any]
 Standards-Version: 3.9.4
 
 Package: kismet
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, adduser, libcap2-bin
+Depends: ${shlibs:Depends}, ${misc:Depends}, adduser, libcap2-bin [linux-any]
 Suggests: kismet-plugins, festival, gpsd
 Description: wireless sniffer and monitor - core
  Kismet is an 802.11 layer-2 wireless network detector, sniffer, and
