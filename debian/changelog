@@ -1,6 +1,8 @@
 kismet (2011.03.R2-1~experimental2) experimental; urgency=low
 
   * Make libcap dependencies relevant only for linux systems
+  * Include po-deconf translations
+    - Swedish    (Closes: #697292)
 
  -- Nick Andrik <nick.andrik@gmail.com>  Wed, 20 Feb 2013 01:32:00 +0100
 
