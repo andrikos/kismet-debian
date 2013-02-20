@@ -1,3 +1,10 @@
+kismet (2011.03.R2-1~experimental3) UNRELEASED; urgency=low
+
+  * Override lintian warning for lack of manpage for kismet_capture (it is not
+    run by user anyway)
+
+ -- Nick Andrik <nick.andrik@gmail.com>  Wed, 20 Feb 2013 01:38:38 +0100
+
 kismet (2011.03.R2-1~experimental2) experimental; urgency=low
 
   * Make libcap dependencies relevant only for linux systems
@@ -10,7 +17,7 @@ kismet (2011.03.R2-1~experimental2) experimental; urgency=low
       options to plugins build environment, useful for hardening
   * Simplified rules file for easier hardening support
 
- -- Nick Andrik <nick.andrik@gmail.com>  Wed, 13 Feb 2013 22:39:40 +0100
+ -- Nick Andrik <nick.andrik@gmail.com>  Wed, 20 Feb 2013 01:32:00 +0100
 
 kismet (2011.03.R2-1~experimental1) experimental; urgency=low
 
