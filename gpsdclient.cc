@@ -54,9 +54,11 @@ void GPSDClient::ConnectCB(int status) {
 			return;
 		} 
 
+		/*
 		snprintf(errstr, STATUS_MAX, "Could not connect to the GPSD server, will "
 				 "reconnect in %d seconds", kismin(reconnect_attempt + 1, 6) * 5);
 		globalreg->messagebus->InjectMessage(errstr, MSGFLAG_ERROR);
+		*/
 		reconnect_attempt++;
 		last_disconnect = globalreg->timestamp.tv_sec;
 
@@ -109,7 +111,7 @@ GPSDClient::GPSDClient(GlobalRegistry *in_globalreg) : GPSCore(in_globalreg) {
 
 	last_mode = -1;
 
-	last_update = globalreg->timestamp.tv_sec;
+	last_tpv = last_update = globalreg->timestamp.tv_sec;
 
 	snprintf(errstr, STATUS_MAX, "Using GPSD server on %s:%d", host, port);
 	globalreg->messagebus->InjectMessage(errstr, MSGFLAG_INFO);
@@ -146,10 +148,16 @@ int GPSDClient::Timer() {
 	// Send version probe if we're setting up a new connection
 	// Send the poll command if we're stuck in older polling mode
 	if (netclient->Valid()) {
+		if (globalreg->timestamp.tv_sec - last_tpv > 3) {
+			// Assume we lost link, gpsd doens't properly tell us
+			mode = 0;
+		}
+
 		if (globalreg->timestamp.tv_sec - last_update > 15) {
 			_MSG("No update from GPSD in 15 seconds or more, attempting to "
 				 "reconnect", MSGFLAG_ERROR);
 
+			mode = 0;
 			netclient->KillConnection();
 			last_update = last_disconnect = globalreg->timestamp.tv_sec;
 			GPSCore::Timer();
@@ -268,6 +276,8 @@ int GPSDClient::ParseData() {
 			} else if (msg_class == "TPV") {
 				float n;
 
+				last_tpv = globalreg->timestamp.tv_sec;
+
 				gps_connected = 1;
 
 				n = JSON_dict_get_number(json, "mode", err);
@@ -319,6 +329,13 @@ int GPSDClient::ParseData() {
 						in_hed = n;
 						use_hed = 1;
 					}
+
+					// Speed
+					n = JSON_dict_get_number(json, "speed", err);
+					if (err.length() == 0) {
+						in_spd = n;
+						use_spd = 1;
+					} 
 				}
 			} else if (msg_class == "SKY") {
 				GPSCore::sat_pos sp;

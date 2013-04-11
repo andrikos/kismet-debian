@@ -334,6 +334,7 @@ int KisDroneFramework::ParseData(int in_fd) {
 	uint8_t *buf;
 	ostringstream osstr;
 	int pos = 0;
+	int ret = 1;
 
 	len = netserver->FetchReadLen(in_fd);
 
@@ -380,8 +381,6 @@ int KisDroneFramework::ParseData(int in_fd) {
 
 		unsigned int dcid = kis_ntoh32(dpkt->drone_cmdnum);
 
-		int ret = 1;
-
 		// Do something with the command
 		map<unsigned int, drone_cmd_rec *>::iterator dcritr = 
 			drone_cmd_map.find(dcid);
@@ -406,8 +405,8 @@ int KisDroneFramework::ParseData(int in_fd) {
 	}
 
 	delete[] buf;
-	
-	return 1;
+
+	return ret;
 }
 
 int KisDroneFramework::KillConnection(int in_fd) {
@@ -758,6 +757,7 @@ int KisDroneFramework::chain_handler(kis_packet *in_pack) {
 	kis_layer1_packinfo *radio = NULL;
 	kis_datachunk *chunk = NULL;
 	kis_ref_capsource *csrc_ref = NULL;
+	kis_fcs_bytes *fcs = NULL;
 
 	// Get the capsource info
 	csrc_ref = (kis_ref_capsource *) in_pack->fetch(_PCM(PACK_COMP_KISCAPSRC));
@@ -768,6 +768,9 @@ int KisDroneFramework::chain_handler(kis_packet *in_pack) {
 	// Get radio-header info
 	radio = (kis_layer1_packinfo *) in_pack->fetch(_PCM(PACK_COMP_RADIODATA));
 
+	// Get any fcs data
+	fcs = (kis_fcs_bytes *) in_pack->fetch(_PCM(PACK_COMP_FCSBYTES));
+
 	// Try to find if we have a data chunk through various means
 	chunk = (kis_datachunk *) in_pack->fetch(_PCM(PACK_COMP_MANGLEFRAME));
 	if (chunk == NULL) {
@@ -777,12 +780,22 @@ int KisDroneFramework::chain_handler(kis_packet *in_pack) {
 		chunk = (kis_datachunk *) in_pack->fetch(_PCM(PACK_COMP_LINKFRAME));
 	}
 
+	if (fcs == NULL) {
+		fcs = new kis_fcs_bytes;
+		fcs->fcs[0] = 0xDE;
+		fcs->fcs[1] = 0xAD;
+		fcs->fcs[2] = 0xBE;
+		fcs->fcs[3] = 0xEF;
+	}
+
 	// Add up the size of the packet for the data[0] component 
 	uint32_t packet_len = sizeof(drone_capture_packet);
-	if (gpsinfo != NULL)
+	if (gpsinfo != NULL && gpsinfo->gps_fix >= 2) 
 		packet_len += sizeof(drone_capture_sub_gps);
 	if (radio != NULL)
 		packet_len += sizeof(drone_capture_sub_radio);
+	if (fcs != NULL)
+		packet_len += 4;
 	if (chunk != NULL) {
 		packet_len += sizeof(drone_capture_sub_data);
 		packet_len += chunk->length;
@@ -863,6 +876,14 @@ int KisDroneFramework::chain_handler(kis_packet *in_pack) {
 		DRONE_CONV_DOUBLE(gpsinfo->alt, &(gppkt->gps_alt));
 		DRONE_CONV_DOUBLE(gpsinfo->spd, &(gppkt->gps_spd));
 		DRONE_CONV_DOUBLE(gpsinfo->heading, &(gppkt->gps_heading));
+	}
+
+	if (fcs != NULL) {
+		dcpkt->cap_content_bitmap |= DRONEBIT(DRONE_CONTENT_FCS);
+
+		memcpy(&(dcpkt->content[suboffst]), fcs->fcs, 4);
+		
+		suboffst += 4;
 	}
 
 	// Other packet types go here

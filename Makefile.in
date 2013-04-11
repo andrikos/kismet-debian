@@ -18,7 +18,7 @@ PSO	= util.o cygwin_utils.o globalregistry.o ringbuf.o \
 	netframework.o clinetframework.o tcpserver.o tcpclient.o \
 	unixdomainserver.o serialclient.o packetsourcetracker.o $(CAPSOURCES) \
 	kis_netframe.o kis_droneframe.o \
-	gpswrapper.o gpscore.o gpsdclient.o gpsserial.o gpsdlibgps.o \
+	gpswrapper.o gpscore.o gpsdclient.o gpsserial.o gpsfixed.o \
 	packetchain.o \
 	plugintracker.o alertracker.o timetracker.o \
 	packetdissectors.o devicetracker.o netracker.o channeltracker.o \
@@ -37,7 +37,7 @@ DRONEO = util.o cygwin_utils.o globalregistry.o ringbuf.o \
 		 psutils.o ipc_remote.o soundcontrol.o kismet_json.o \
 		 netframework.o clinetframework.o tcpserver.o tcpclient.o serialclient.o \
 		 drone_kisnetframe.o kis_droneframe.o \
-		 gpswrapper.o gpscore.o gpsdclient.o gpsserial.o gpsdlibgps.o \
+		 gpswrapper.o gpscore.o gpsdclient.o gpsserial.o gpsfixed.o \
 		 packetchain.o \
 		 $(CAPSOURCES) \
 		 plugintracker.o packetsourcetracker.o timetracker.o \
@@ -90,7 +90,7 @@ $(PS):	$(PSO) $(CS)
 	$(LD) $(LDFLAGS) -o $(PS) $(PSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(KSLIBS)
 
 $(CS):	$(CSO)
-	$(LD) $(LDFLAGS) -o $(CS) $(CSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(CAPLIBS)
+	$(LD) $(LDFLAGS) -o $(CS) $(CSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(CAPLIBS) $(KSLIBS)
 
 $(DRONE):	$(DRONEO) $(CS)
 	$(LD) $(LDFLAGS) -o $(DRONE) $(DRONEO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(KSLIBS)
@@ -211,6 +211,7 @@ rpm:
 
 clean:
 	@-rm -f *.o *.mo
+	@-$(MAKE) all-plugins-clean
 	@-rm -f $(PS)
 	@-rm -f $(CS)
 	@-rm -f $(DRONE)
@@ -218,6 +219,7 @@ clean:
 
 distclean:
 	@-$(MAKE) clean
+	@-$(MAKE) all-plugins-clean
 	@-rm -f *~
 	@-rm -f $(DEPEND)
 	@-rm -f config.status
@@ -227,11 +229,7 @@ distclean:
 	@-rm -rf packaging/pak
 	@-rm -rf *.ipk
 	@-rm -f scripts/kismet
-	@-( cd extra/; $(MAKE) distclean )
 	@-rm -f Makefile
-
-arm: $(PS) $(NC) $(ZBUILD)
-	@echo "ARM toolset built."
 
 ipkg: $(PS) $(NC) 
 	@if test "`whoami`" != "root"; then echo "Warning:  You are not root.  The ipkg will probably not be what you want."; fi
@@ -273,14 +271,42 @@ $(DEPEND): Makefile
 plugins: Makefile
 	@( export KIS_SRC_DIR=`pwd`; for x in plugin-*/; do echo "PLUGIN: $$x"; ( cd "$$x"; make; ); done )
 
-plugins-clean: Makefile
+restricted-plugins: Makefile
+	@( export KIS_SRC_DIR=`pwd`; for x in restricted-plugin-*/; do echo "PLUGIN: $$x"; ( cd "$$x"; make; ); done )
+
+plugins-clean:
 	@( export KIS_SRC_DIR=`pwd`; for x in plugin-*/; do echo "PLUGIN-CLEAN: $$x"; ( cd "$$x"; make clean; ); done )
+
+restricted-plugins-clean:
+	@( export KIS_SRC_DIR=`pwd`; for x in restricted-plugin-*/; do echo "PLUGIN-CLEAN: $$x"; ( cd "$$x"; make clean; ); done )
 
 plugins-install: Makefile
 	@( export KIS_SRC_DIR=`pwd`; for x in plugin-*/; do echo "PLUGIN-INSTALL: $$x"; ( cd "$$x"; make install; ); done )
 
+restricted-plugins-install: Makefile
+	@( export KIS_SRC_DIR=`pwd`; for x in restricted-plugin-*/; do echo "PLUGIN-INSTALL: $$x"; ( cd "$$x"; make install; ); done )
+
 plugins-userinstall: Makefile
 	@( export KIS_SRC_DIR=`pwd`; for x in plugin-*/; do echo "PLUGIN-USERINSTALL: $$x"; ( cd "$$x"; make userinstall; ); done )
+
+restricted-plugins-userinstall: Makefile
+	@( export KIS_SRC_DIR=`pwd`; for x in restricted-plugin-*/; do echo "PLUGIN-USERINSTALL: $$x"; ( cd "$$x"; make userinstall; ); done )
+
+all-plugins: Makefile
+	@$(MAKE) plugins
+	@$(MAKE) restricted-plugins
+
+all-plugins-install: Makefile
+	@$(MAKE) plugins-install
+	@$(MAKE) restricted-plugins-install
+
+all-plugins-userinstall: Makefile
+	@$(MAKE) plugins-userinstall
+	@$(MAKE) restricted-plugins-userinstall
+
+all-plugins-clean: Makefile
+	@$(MAKE) plugins-clean
+	@$(MAKE) restricted-plugins-clean
 
 include $(DEPEND)
 
@@ -293,5 +319,11 @@ include $(DEPEND)
 .m.mo:	$(DEPEND)
 	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.m -o $@ 
 	
+check-libpcap-nl:
+	@$(REALLD) -lpcap -o check-libpcap-nl.so 2>/dev/null
+	@ldd check-libpcap-nl.so | grep libnl.so | awk '{ print $$1 }' > $@
+	@rm check-libpcap-nl.so
+	@test "`cat $@`" = "" || \
+		(echo "It looks like your libpcap links libnl"; rm $@; exit 1)
 
 .SUFFIXES: .c .cc .o .m .mo

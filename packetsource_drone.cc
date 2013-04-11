@@ -120,9 +120,6 @@ void DroneClientFrame::ConnectCB(int status) {
 				cli_port << " failed (" << strerror(errno) << ") and reconnection "
 				"not enabled";
 			_MSG(osstr.str(), MSGFLAG_PRINTERROR);
-			delete tcpcli;
-			tcpcli = NULL;
-			netclient = NULL;
 			return;
 		} else {
 			osstr << "Could not create connection to the Kismet drone "
@@ -432,6 +429,7 @@ int DroneClientFrame::ParseData() {
 			if ((sbm & DRONEBIT(DRONE_SRC_INVALID)) &&
 				(rofft + 2 <= sourcelen)) {
 				src_invalidated = kis_ntoh16(spkt->invalidate);
+				comp_counter++;
 				rofft += 2;
 			}
 
@@ -478,6 +476,9 @@ int DroneClientFrame::ParseData() {
 			}
 
 			if (comp_counter >= 8 && src_invalidated == 0 && new_uuid.error == 0) {
+				_MSG("Live-adding pseudo capsources from drones temporarily disabled until "
+					 "rewrite.", MSGFLAG_INFO);
+#if 0
 				// Make sure the source doesn't exist in the real tracker
 				pst_packetsource *rsrc = 
 					globalreg->sourcetracker->FindLivePacketSourceUUID(new_uuid);
@@ -488,6 +489,8 @@ int DroneClientFrame::ParseData() {
 					osstr << interfacestr << ":uuid=" << new_uuid.UUID2String();
 					if (namestr != "")
 						osstr << ",name=" << namestr;
+
+					osstr << ",channellist=n/a";
 
 					// Derive the rest of the source options
 					if (channel_hop == 0)
@@ -541,6 +544,7 @@ int DroneClientFrame::ParseData() {
 					globalreg->sourcetracker->RemovePacketSource(rsrc);
 					virtual_src_map.erase(new_uuid);
 				}
+#endif
 			}
 		} else if (dcid == DRONE_CMDNUM_CAPPACKET) {
 			drone_capture_packet *dcpkt = (drone_capture_packet *) dpkt->data;
@@ -686,6 +690,18 @@ int DroneClientFrame::ParseData() {
 
 				// Jump to the end of this packet
 				poffst += sublen;
+			}
+
+			if ((cbm & DRONEBIT(DRONE_CONTENT_FCS))) {
+				kis_fcs_bytes *fcschunk = new kis_fcs_bytes;
+
+				memcpy(fcschunk->fcs, &(dcpkt->content[poffst]), 4);
+				fcschunk->fcsvalid = 1;
+
+				newpack->insert(_PCM(PACK_COMP_FCSBYTES), fcschunk);
+
+				// Jump to the end of this packet
+				poffst += 4;
 			}
 
 			if ((cbm & DRONEBIT(DRONE_CONTENT_IEEEPACKET))) {
@@ -925,8 +941,9 @@ PacketSource_Drone::PacketSource_Drone(GlobalRegistry *in_globalreg,
 		FetchOpt("port", in_opts);
 
 	// Look for the reconnect parm
-	if (FetchOpt("reconnect", in_opts) != "" &&
-		StrLower(FetchOpt("reconnect", in_opts)) != "true") {
+	// if (FetchOpt("reconnect", in_opts) != "" &&
+	// 	StrLower(FetchOpt("reconnect", in_opts)) != "true") {
+	if (FetchOptBoolean("reconnect", in_opts, 1)) {
 		reconnect = 0;
 		_MSG("Disabling reconnection on drone source '" + name + "' '" + 
 			 interface + "'.  If the connection fails this source will remain "

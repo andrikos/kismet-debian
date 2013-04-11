@@ -119,10 +119,17 @@ struct opt_pair {
 
 // Generic option handlers
 string FetchOpt(string in_key, vector<opt_pair> *in_vec);
+int FetchOptBoolean(string in_key, vector<opt_pair> *in_vec, int dvalue);
 vector<string> FetchOptVec(string in_key, vector<opt_pair> *in_vec);
 int StringToOpts(string in_line, string in_sep, vector<opt_pair> *in_vec);
 void AddOptToOpts(string opt, string val, vector<opt_pair> *in_vec);
 void ReplaceAllOpts(string opt, string val, vector<opt_pair> *in_vec);
+
+// String compare, 1 true 0 false -1 unknown, or default value as provided
+int StringToBool(string s, int dvalue = -1);
+
+// Append to a string, with a delimiter if applicable
+string StringAppend(string s, string a, string d = " ");
 
 int XtoI(char x);
 int Hex2UChar(unsigned char *in_hex, unsigned char *in_chr);

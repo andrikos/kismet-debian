@@ -66,6 +66,7 @@ PacketSource_Wext::PacketSource_Wext(GlobalRegistry *in_globalreg,
 	opp_vap = 0;
 	force_vap = 0;
 	nlcache = nlfamily = NULL;
+	ignore_primary_state = false;
 
 	stored_channel = stored_mode = stored_privmode = stored_flags = -1;
 
@@ -144,8 +145,31 @@ PacketSource_Wext::~PacketSource_Wext() {
 		unlink(wpa_local_path.c_str());
 }
 
+int PacketSource_Wext::OpenSource() {
+	int r = PacketSource_Pcap::OpenSource();
+
+	if (r < 0)
+		return r;
+
+	if (DatalinkType() < 0) {
+		if (pd != NULL)
+			pcap_close(pd);
+		return -1;
+	}
+
+	return 1;
+}
+
 int PacketSource_Wext::ParseOptions(vector<opt_pair> *in_opts) {
 	PacketSource_Pcap::ParseOptions(in_opts);
+
+	// Force us to keep the primary interface still running
+	if (FetchOptBoolean("ignoreprimary", in_opts, false)) {
+		ignore_primary_state = true;
+		_MSG("Source '" + interface + "' will ignore the primary interface "
+			 "up.  This may cause conflicts with wpasupplicant / networkmanager",
+			 MSGFLAG_INFO);
+	}
 
 	if (FetchOpt("vap", in_opts) != "") {
 		vap = FetchOpt("vap", in_opts);
@@ -157,13 +181,14 @@ int PacketSource_Wext::ParseOptions(vector<opt_pair> *in_opts) {
 	}
 
 	// Record if the VAP is absolutely forced (no passive blank option)
-	if (StrLower(FetchOpt("forcevap", in_opts)) == "true")
+	// if (StrLower(FetchOpt("forcevap", in_opts)) == "true")
+	if (FetchOptBoolean("forcevap", in_opts, 0))
 		force_vap = 1;
 
 	// Turn on VAP by default
-	if (vap == "" && (FetchOpt("forcevap", in_opts) == "" || 
-					  StrLower(FetchOpt("forcevap", in_opts)) == "true")) {
-
+	// if (vap == "" && (FetchOpt("forcevap", in_opts) == "" || 
+	// 				  StrLower(FetchOpt("forcevap", in_opts)) == "true")) {
+	if (vap == "" && FetchOptBoolean("forcevap", in_opts, 1)) {
 		if (vap == "") {
 			// Only set a vap when we're not targetting a vap
 			if (mac80211_find_parent(string(interface + "mon").c_str()) == "") {
@@ -181,7 +206,8 @@ int PacketSource_Wext::ParseOptions(vector<opt_pair> *in_opts) {
 			 "modify the provided interface.", MSGFLAG_INFO);
 	}
 
-	if (FetchOpt("fcsfail", in_opts) == "true") {
+	// if (FetchOpt("fcsfail", in_opts) == "true") {
+	if (FetchOptBoolean("fcsfail", in_opts, 0)) {
 		if (vap == "") {
 			_MSG("Source '" + interface + "': 'fcsfail' enabled to tell "
 				 "mac80211 to report invalid packets, but not using a VAP. "
@@ -196,7 +222,8 @@ int PacketSource_Wext::ParseOptions(vector<opt_pair> *in_opts) {
 		}
 	}
 
-	if (FetchOpt("plcpfail", in_opts) == "true") {
+	// if (FetchOpt("plcpfail", in_opts) == "true") {
+	if (FetchOptBoolean("plcpfail", in_opts, 0)) {
 		if (vap == "") {
 			_MSG("Source '" + interface + "': 'plcpfail' enabled to tell "
 				 "mac80211 to report invalid packets, but not using a VAP. "
@@ -220,10 +247,12 @@ int PacketSource_Wext::ParseOptions(vector<opt_pair> *in_opts) {
 				 "the defaults, set this path if your wpa_supplicant uses "
 				 "something else for the control socket", MSGFLAG_ERROR);
 
-		if (FetchOpt("hop", in_opts) == "" || FetchOpt("hop", in_opts) == "true") {
+		// if (FetchOpt("hop", in_opts) == "" || FetchOpt("hop", in_opts) == "true") {
+		if (FetchOptBoolean("hop", in_opts, 1)) {
 			_MSG("Source '" + interface + "' - wpa_scan assist from wpa_supplicant "
 				 "requested but hopping not disabled, wpa_scan is meaningless on "
-				 "a hopping interface, so it will not be disabled.", MSGFLAG_ERROR);
+				 "a hopping interface, so it will not be enabled.", MSGFLAG_ERROR);
+			scan_wpa = 0;
 		} else if (sscanf(FetchOpt("wpa_scan", in_opts).c_str(), "%d", &scan_wpa) != 1) {
 			_MSG("Source '" + interface + "' - invalid wpa_scan interval, expected "
 				 "number (of seconds) between each scan", MSGFLAG_ERROR);
@@ -231,6 +260,7 @@ int PacketSource_Wext::ParseOptions(vector<opt_pair> *in_opts) {
 		} else {
 			_MSG("Source '" + interface + "' - using wpa_supplicant to assist with "
 				 "non-disruptive hopping", MSGFLAG_INFO);
+			scan_wpa = 1;
 		}
 
 		if (wpa_path == "")
@@ -427,8 +457,8 @@ int PacketSource_Wext::EnableMonitor() {
 	char errstr[STATUS_MAX];
 	int ret;
 
-#ifdef HAVE_LINUX_NETLINK
 	if (Linux_GetSysDrvAttr(interface.c_str(), "phy80211")) {
+#ifdef HAVE_LINUX_NETLINK
 		use_mac80211 = 1;
 		if (mac80211_connect(interface.c_str(), &(globalreg->nlhandle), &nlcache, 
 							 &nlfamily, errstr) < 0) {
@@ -436,10 +466,22 @@ int PacketSource_Wext::EnableMonitor() {
 				 MSGFLAG_PRINTERROR);
 			return -1;
 		}
-	}
+
+		// always enable crc on phy80211 since they seem to report bogus
+		// crap fairly often
+		SetValidateCRC(1);
 #else
-	use_mac80211 = 0;
+		warning =
+			"Source '" + interface + "' uses phy80211/mac80211 drivers, but "
+			 "Kismet was not compiled with LibNL.  This will almost definitely not "
+			 "work right, but continuing for now.  Expect bad behavior.";
+		_MSG(warning, MSGFLAG_PRINTERROR);
+
+		use_mac80211 = 0;
 #endif
+	} else {
+		use_mac80211 = 0;
+	}
 
 	if (type == "ipw2200" || type == "ipw2100") {
 		warning =
@@ -486,27 +528,39 @@ int PacketSource_Wext::EnableMonitor() {
 			 "this and create a new monitor mode vap no matter what, use the "
 			 "forcevap=true source option", MSGFLAG_PRINTERROR);
 	} else if (vap != "" && use_mac80211) {
-		if ((ret = Ifconfig_Delta_Flags(parent.c_str(), errstr, 
-										IFF_UP | IFF_RUNNING | IFF_PROMISC)) < 0) {
-			_MSG(errstr, MSGFLAG_PRINTERROR);
-			if (ret == ENODEV) {
-				warning = "Failed to find interface '" + parent + "', it may not be "
-					"present at this time, it may not exist at all, or there may "
-					"be a problem with the driver (such as missing firmware)";
+		// If we're ignoring the primary state do nothing, otherwise shut it down
+		if (!ignore_primary_state) {
+			int fl;
 
-			} else {
-				warning = "Failed to bring up interface '" + parent + "', this "
-					"often means there is a problem with the driver (such as "
-					"missing firmware), check the output of `dmesg'.";
+			_MSG("Bringing down primary interface '" + parent + "' to prevent "
+				 "wpa_supplicant and NetworkManager from trying to configure it",
+				 MSGFLAG_INFO);
+
+			if ((ret = Ifconfig_Get_Flags(parent.c_str(), errstr, &fl)) == 0) {
+				fl &= ~IFF_UP;
+			
+				ret = Ifconfig_Set_Flags(parent.c_str(), errstr, fl);
 			}
 
-			_MSG(warning, MSGFLAG_PRINTERROR);
+			if (ret < 0) {
+				_MSG(errstr, MSGFLAG_PRINTERROR);
+				if (ret == ENODEV) {
+					warning = "Failed to find interface '" + parent + "', it may not be "
+						"present at this time, it may not exist at all, or there may "
+						"be a problem with the driver (such as missing firmware)";
 
-			return -1;
+				} else {
+					warning = "Failed to bring up interface '" + parent + "', this "
+						"often means there is a problem with the driver (such as "
+						"missing firmware), check the output of `dmesg'.";
+				}
+
+				_MSG(warning, MSGFLAG_PRINTERROR);
+
+				return -1;
+			}
 		}
 
-		_MSG("Source '" + parent + "' attempting to create mac80211 VAP '" + 
-			 vap + "'", MSGFLAG_INFO);
 		if (mac80211_createvap(parent.c_str(), vap.c_str(), errstr) < 0) {
 			_MSG("Source '" + parent + "' failed to create mac80211 VAP: " +
 				 string(errstr), MSGFLAG_PRINTERROR);
@@ -719,10 +773,11 @@ int PacketSource_Wext::SetChannel(unsigned int in_ch) {
 		}
 	}
 
-	_MSG(errstr, MSGFLAG_PRINTERROR);
+	_MSG("Packet source '" + name + "' failed to set channel " + IntToString(in_ch) + 
+		 ": " + errstr, MSGFLAG_PRINTERROR);
 
 	if (err == -22 && use_mac80211) {
-		_MSG("Failed to change channel on interface '" + interface +"' and it looks "
+		_MSG("Failed to change channel on source '" + name +"' and it looks "
 			 "like the device is mac80211 based but does not accept channel control "
 			 "over nl80211.  Kismet will fall back to using the IW* channel "
 			 "methods.", MSGFLAG_PRINTERROR);
@@ -731,7 +786,7 @@ int PacketSource_Wext::SetChannel(unsigned int in_ch) {
 	}
 
 	if (err == -2) {
-		_MSG("Failed to change channel on interface '" + interface +"' and it looks "
+		_MSG("Failed to change channel on source '" + name +"' and it looks "
 			 "like the device has been removed (or the drivers have lost track of "
 			 "it somehow)", MSGFLAG_ERROR);
 		error = 1;
@@ -741,7 +796,7 @@ int PacketSource_Wext::SetChannel(unsigned int in_ch) {
 	int curmode;
 	if (Iwconfig_Get_Mode(interface.c_str(), errstr, &curmode) < 0) {
 		_MSG(errstr, MSGFLAG_PRINTERROR);
-		_MSG("Failed to change channel on interface '" + interface + "' and "
+		_MSG("Failed to change channel on source '" + name + "' and "
 			 "failed to fetch current interface state when determining the "
 			 "cause of the error.  It is likely that the drivers are in a "
 			 "broken or unavailable state.", MSGFLAG_PRINTERROR);
@@ -750,7 +805,7 @@ int PacketSource_Wext::SetChannel(unsigned int in_ch) {
 	}
 
 	if (curmode != LINUX_WLEXT_MONITOR) {
-		_MSG("Failed to change channel on interface '" + interface + "'. " 
+		_MSG("Failed to change channel on source '" + name + "'. " 
 			 "It appears to no longer be in monitor mode.  This can happen if "
 			 "the drivers enter an unknown or broken state, but usually indicate "
 			 "that an external program has changed the device mode.  Make sure no "
@@ -824,13 +879,29 @@ PacketSource_Madwifi::PacketSource_Madwifi(GlobalRegistry *in_globalreg,
 	SetFCSBytes(4);
 	vapdestroy = 1;
 
-	if (FetchOpt("vapkill", in_opts) != "" && FetchOpt("vapkill", in_opts) != "true") {
+	// if (FetchOpt("vapkill", in_opts) != "" && FetchOpt("vapkill", in_opts) != "true") {
+	if (FetchOptBoolean("vapkill", in_opts, 1)) {
 		vapdestroy = 0;
 		_MSG("Madwifi-NG source " + name + " " + interface + ": Disabling destruction "
 			 "of non-monitor VAPS because vapkill was not set to true in source "
 			 "options.  This may cause capture problems with some driver versions.",
 			 MSGFLAG_INFO);
 	}
+}
+
+int PacketSource_Madwifi::OpenSource() {
+	int r = PacketSource_Pcap::OpenSource();
+
+	if (r < 0)
+		return r;
+
+	if (DatalinkType() < 0) {
+		if (pd != NULL)
+			pcap_close(pd);
+		return -1;
+	}
+
+	return 1;
 }
 
 int PacketSource_Madwifi::RegisterSources(Packetsourcetracker *tracker) {
@@ -1082,7 +1153,33 @@ int PacketSource_Wrt54Prism::OpenSource() {
 	// Restore
 	interface = realsrc;
 
-	return ret;
+	if (ret < 0)
+		return ret;
+
+	// Anything but windows and linux
+    #if defined (SYS_OPENBSD) || defined(SYS_NETBSD) || defined(SYS_FREEBSD) \
+		|| defined(SYS_DARWIN)
+	// Set the DLT in the order of what we want least, since the last one we
+	// set will stick
+	pcap_set_datalink(pd, DLT_IEEE802_11);
+	pcap_set_datalink(pd, DLT_IEEE802_11_RADIO_AVS);
+	pcap_set_datalink(pd, DLT_IEEE802_11_RADIO);
+	// Hack to re-enable promisc mode since changing the DLT seems to make it
+	// drop it on some bsd pcap implementations
+	ioctl(pcap_get_selectable_fd(pd), BIOCPROMISC, NULL);
+	// Hack to set the fd to IOIMMEDIATE, to solve problems with select() on bpf
+	// devices on BSD
+	int v = 1;
+	ioctl(pcap_get_selectable_fd(pd), BIOCIMMEDIATE, &v);
+	#endif
+
+	if (DatalinkType() < 0) {
+		if (pd != NULL)
+			pcap_close(pd);
+		return -1;
+	}
+
+	return 1;
 }
 
 #endif

@@ -8,8 +8,8 @@ include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 
 # Run autoconf since we patch configure.in
-#DEB_AUTO_UPDATE_ACLOCAL 	:= 1.11
-#DEB_AUTO_UPDATE_AUTOCONF	:= 1
+DEB_AUTO_UPDATE_ACLOCAL 	:= 1.11
+DEB_AUTO_UPDATE_AUTOCONF	:= 1
 
 # Make sure the plugins are built without PIE support (they already use PIC
 # since they are shared libraries)

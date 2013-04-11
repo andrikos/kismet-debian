@@ -363,8 +363,10 @@ KisBuiltinDissector::KisBuiltinDissector(GlobalRegistry *in_globalreg) {
 											  &pbd_blittimer, this);
 
 	// Do we process the whole data packet?
-    if (StrLower(globalreg->kismet_config->FetchOpt("hidedata")) == "true" ||
-		StrLower(globalreg->kismet_config->FetchOpt("dontbeevil")) == "true") {
+    // if (StrLower(globalreg->kismet_config->FetchOpt("hidedata")) == "true" ||
+	// 	StrLower(globalreg->kismet_config->FetchOpt("dontbeevil")) == "true") {
+    if (globalreg->kismet_config->FetchOptBoolean("hidedata", 0) ||
+		globalreg->kismet_config->FetchOptBoolean("dontbeevil", 0)) {
 		_MSG("hidedata= set in Kismet config.  Kismet will ignore the contents "
 			 "of data packets entirely", MSGFLAG_INFO);
 		dissect_data = 0;
@@ -419,7 +421,8 @@ KisBuiltinDissector::KisBuiltinDissector(GlobalRegistry *in_globalreg) {
         _MSG(errstr, MSGFLAG_INFO);
     }
 
-    if (globalreg->kismet_config->FetchOpt("allowkeytransmit") == "true") {
+    // if (globalreg->kismet_config->FetchOpt("allowkeytransmit") == "true") {
+    if (globalreg->kismet_config->FetchOptBoolean("allowkeytransmit", 0)) {
         _MSG("Allowing Kismet frontends to view WEP keys", MSGFLAG_INFO);
         client_wepkey_allowed = 1;
     } else {
@@ -1072,25 +1075,27 @@ int KisBuiltinDissector::ieee80211_dissector(kis_packet *in_pack) {
 
 				tag_offset++;
 
-				if (taglen < 6 || tag_offset + taglen > chunk->length) {
-					packinfo->corrupt = 1;
-					in_pack->insert(_PCM(PACK_COMP_80211), packinfo);
-					return 0;
-				}
-				
-				packinfo->dot11d_country =
-					MungeToPrintable(string((const char *) &(chunk->data[tag_offset]), 
-											0, 3));
+				if (tag_offset + taglen > chunk->length) {
 
-				// We don't have to check taglen since we check that above
-				for (unsigned int p = 3; p + 3 <= taglen; p += 3) {
-					dot11d_range_info ri;
+					// country tags only valid if 6 bytes or more, ubnt throws
+					// broken ones on some APs
+					if (taglen > 6) {
+						packinfo->dot11d_country =
+							MungeToPrintable(string((const char *) 
+													&(chunk->data[tag_offset]), 
+													0, 3));
 
-					ri.startchan = chunk->data[tag_offset + p];
-					ri.numchan = chunk->data[tag_offset + p + 1];
-					ri.txpower = chunk->data[tag_offset + p + 2];
+						// We don't have to check taglen since we check that above
+						for (unsigned int p = 3; p + 3 <= taglen; p += 3) {
+							dot11d_range_info ri;
 
-					packinfo->dot11d_vec.push_back(ri);
+							ri.startchan = chunk->data[tag_offset + p];
+							ri.numchan = chunk->data[tag_offset + p + 1];
+							ri.txpower = chunk->data[tag_offset + p + 2];
+
+							packinfo->dot11d_vec.push_back(ri);
+						}
+					}
 				}
 			}
 

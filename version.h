@@ -19,12 +19,12 @@
 #ifndef __KISVERSION_H__
 #define __KISVERSION_H__
 
-#define VERSION_MAJOR	"2011"
+#define VERSION_MAJOR	"2013"
 #define VERSION_MINOR	"03"
-#define VERSION_TINY	"R2"
+#define VERSION_TINY	"R0"
 
-#define REVISION		"$Rev: 3137 $"
-#define REVDATE			"$LastChangedDate: 2011-04-04 11:28:48 -0400 (Mon, 04 Apr 2011) $"
+#define REVISION		"$Rev$"
+#define REVDATE			"$LastChangedDate$"
 
 #endif
 

@@ -438,6 +438,11 @@ GlobalRegistry *globalregistry = NULL;
 
 // Catch our interrupt
 void CatchShutdown(int sig) {
+	if (sig == 0) {
+		kill(getpid(), SIGTERM);
+		return;
+	}
+
     string termstr = "Kismet server terminating.";
 
 	// Eat the child signal handler
@@ -496,6 +501,7 @@ void CatchShutdown(int sig) {
 				break;
 			}
 		}
+
 	}
 
 	if (globalregistry->rootipc != NULL) {
@@ -897,7 +903,11 @@ int main(int argc, char *argv[], char *envp[]) {
 	}
 
 	if (conf->FetchOpt("servername") == "") {
-		globalregistry->servername = "Kismet";
+		char hostname[64];
+		if (gethostname(hostname, 64) < 0)
+			globalregistry->servername = "Kismet";
+		else
+			globalregistry->servername = string(hostname);
 	} else {
 		globalregistry->servername = MungeToPrintable(conf->FetchOpt("servername"));
 	}

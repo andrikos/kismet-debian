@@ -89,6 +89,8 @@ public:
 	// Should be, something can override if it needs
 	virtual int FetchChannelCapable() { return 1; }
 
+    virtual int OpenSource();
+
 	// Generic-level functions
 	virtual int EnableMonitor();
 	virtual int DisableMonitor();
@@ -120,6 +122,7 @@ protected:
 	int use_mac80211, opp_vap, force_vap;
 	vector<unsigned int> mac80211_flag_vec;
 	void *nlcache, *nlfamily;
+	bool ignore_primary_state;
 
 	virtual void FetchRadioData(kis_packet *in_packet);
 
@@ -151,6 +154,8 @@ public:
 										  vector<opt_pair> *in_opts) {
 		return new PacketSource_Madwifi(in_globalreg, in_interface, in_opts);
 	}
+
+    virtual int OpenSource();
 
 	virtual int AutotypeProbe(string in_device);
 	virtual int RegisterSources(Packetsourcetracker *tracker);

@@ -1,4 +1,4 @@
-Kismet 2011-03-R2
+Kismet 2013-03-R1
 Mike Kershaw <dragorn@kismetwireless.net>
 http://www.kismetwireless.net
 
@@ -341,6 +341,10 @@ http://www.kismetwireless.net
                          interface).  The same warnings and conditions as
                          'fcsfail' apply.  This option is for specific,
                          expert use only, when in doubt, leave it alone.
+      ignoreprimary=t   Ignore the state of the primary interface on
+                         mac80211.  Normally, Kismet will shut down the
+                         main interface (ie wlan0, wlan1) to prevent wpasupp
+                         or NetworkManager from changing the channel, etc.
 
     Example sources (these are given as config file parameters, however they
     will work equally well as command-line options, ie "-c wlan0"):
@@ -660,7 +664,7 @@ http://www.kismetwireless.net
 
     Plugins need access to the Kismet source (and configuration
     information) to compile, and should ALWAYS be recompiled when the 
-    Kismet version changes (for those using Kismet-SVN development code, 
+    Kismet version changes (for those using Kismet Git development code, 
     this may require rebuilding plugins every time a checkout is done).
 
     Plugins bundled with Kismet (and third-party plugins extracted into the
@@ -672,6 +676,14 @@ http://www.kismetwireless.net
     be set or the symlinks to the Kismet source must be set up properly (see
     the README for the plugin you are trying to compile for more
     information).
+
+    "Restricted" plugins, which provide potentially invasive behavior such
+    as auto-guessing WEP based by the SSID or automatically running the PTW
+    WEP attack against captured data can be compiled and installed with:
+        make restricted-plugins
+        make restricted-plugins-install
+         -or-
+        make restricted-plugins-userinstall
 
     Plugins for the Kismet server (capture and logging process) are loaded
     from the system-wide plugin directory (/usr/local/lib/kismet/ by

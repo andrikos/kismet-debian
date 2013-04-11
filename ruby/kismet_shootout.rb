@@ -1,8 +1,23 @@
 #!/usr/bin/env ruby
 
-# Very basic example for logging Kismet data to SQLite
-# Would need to be expanded for more fields and better logging,
-# contributions happily accepted
+# Moderately complex example of using Rub with Kismet, compares the relative 
+# performance of multiple wifi cards on a Kismet server
+
+#   This file is part of Kismet
+#
+#   Kismet is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 2 of the License, or
+#   (at your option) any later version.
+#
+#   Kismet is distributed in the hope that it will be useful,
+#     but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with Kismet; if not, write to the Free Software
+#   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
 require 'socket'
 require 'time'
@@ -14,6 +29,8 @@ host = "localhost"
 port = 2501
 $cards = []
 $channel = 6
+
+$start_time = 0
 
 # Have not locked cards to a channel yet
 $channel_locked = 0
@@ -51,6 +68,11 @@ def sourcecb(proto, fields)
 		# Once we've seen all the sources we expect to see twice, we start outputting
 		# tracking data
 		if $channel_locked > $cards.length * 2
+			if $start_time == 0
+				$start_time = Time.now.to_i
+				puts "INFO: Started at " + Time.now.inspect
+			end
+
 			if $card_records.include?(fields["uuid"]) and $cards.include?(fields["interface"])
 				# If we've seen this before, start the scan and print cycle
 				r = $card_records[fields["uuid"]]
@@ -80,7 +102,7 @@ def sourcecb(proto, fields)
 						hstr = ""
 
 						if $output_type == "pretty"
-							hstr = sprintf("%s  %6.6s %5.5s %8.8s %4.4s", hstr, "", "PPS", "Total", "Pcnt")
+							hstr = sprintf("%s  %6.6s %5.5s %8.8s %4.4s", hstr, "", "PPS", "Packets", "Pcnt")
 
 						else
 							$cards.each { |c|
@@ -88,7 +110,7 @@ def sourcecb(proto, fields)
 							}
 						end
 
-						hstr = sprintf("%s %6.6s", hstr, "Total")
+						hstr = sprintf("%s %6.6s %6.6s", hstr, "Total", "Elpsd")
 
 						puts hstr
 
@@ -122,7 +144,26 @@ def sourcecb(proto, fields)
 							printf("  %6.6s %5.5s %8.8s %3d%%\n", cr[1]["interface"], cr[1]["packets"] - cr[1]["last_packets"], cr[1]["packets"], (cr[1]["packets"].to_f / best.to_f) * 100)
 						}
 
-						printf("  %6.6s %5.5s %8.8s %4.4s %6.6s\n", "", "", "", "", total - lasttotal)
+						t = Time.now.to_i - $start_time
+						tu = ""
+
+						if t > 60*60
+							th = t/60/60
+							tu = "#{th}h"
+							t = t - (th * 3600)
+						end
+						
+						if t > 60
+							tm = t / 60
+							tu += "#{tm}m"
+							t = t - (tm * 60)
+						end
+					
+						if t
+							tu += "#{t}s"
+						end
+
+						printf("  %6.6s %5.5s %8.8s %4.4s %6.6s %6.6s\n", "", "", "", "", total - lasttotal, tu)
 					else
 						$card_records.each { |cr|
 							cr[1]["printed"] = 1
@@ -133,7 +174,26 @@ def sourcecb(proto, fields)
 							str = sprintf("%s  %6.6s %5.5s %8.8s %3d%%", str, cname, cr[1]["packets"] - cr[1]["last_packets"], cr[1]["packets"], (cr[1]["packets"].to_f / best.to_f) * 100)
 						}
 
-						str = sprintf("%s %6.6s", str, total - lasttotal)
+						t = Time.now.to_i - $start_time
+						tu = ""
+
+						if t > 60*60
+							th = t/60/60
+							tu = "#{th}h"
+							t = t - (th * 3600)
+						end
+						
+						if t > 60
+							tm = t / 60
+							tu += "#{tm}m"
+							t = t - (tm * 60)
+						end
+					
+						if t
+							tu += "#{t}s"
+						end
+
+						str = sprintf("%s %6.6s %6.6s", str, total - lasttotal, tu)
 
 						puts str
 					end
@@ -247,7 +307,7 @@ if options[:channel]
 		exit
 	end
 
-	channel = options[:channel].to_i
+	$channel = options[:channel].to_i
 end
 
 
