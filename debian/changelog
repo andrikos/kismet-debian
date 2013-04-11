@@ -1,3 +1,14 @@
+kismet (2011.03.R2-2) unstable; urgency=low
+
+  * Move configuration files back to /etc/kismet
+    - Specify correct sysconfdir in rules file
+    - Add mv_conffile commands in maintscript file
+    - Add pre-build-dep for dpkg-maintscript-helper in control file
+  * Delete old unneeded configuration files (Closes: #701515)
+    - Add rm_conffile command in maintscript file
+
+ -- Nick Andrik <nick.andrik@gmail.com>  Tue, 26 Feb 2013 17:05:46 +0100
+
 kismet (2011.03.R2-1) unstable; urgency=low
 
   * New upstream release (Closes: #534884, #558773, #572593, LP: #407972)

@@ -14,6 +14,7 @@ Standards-Version: 3.9.4
 
 Package: kismet
 Architecture: any
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}, adduser, libcap2-bin [linux-any]
 Suggests: kismet-plugins, festival, gpsd
 Description: wireless sniffer and monitor - core

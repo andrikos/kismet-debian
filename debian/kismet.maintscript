@@ -1,0 +1,5 @@
+mv_conffile /etc/kismet.conf /etc/kismet/kismet.conf
+mv_conffile /etc/kismet_drone.conf /etc/kismet/kismet_drone.conf
+rm_conffile /etc/kismet/kismet_ui.conf
+rm_conffile /etc/kismet/client_manuf
+rm_conffile /etc/kismet/ap_manuf
