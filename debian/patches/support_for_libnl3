@@ -1,13 +1,28 @@
 Add support for libnl-3, patches picked from upstream commits:
+61627e6ff61b6636c7b80f261fd95328f8857672
 27049d0edf7c20b777129a1636d1b0530e3a289a
 892029531bf748a973599d29763a523d31f67a6c
 53c3f4ac17be30a89a3d53cf8c85d0cf90b169df
 2e1f9afae4054d8a37a90da126051a1c5be11e7c
 2a3c9d80b2121db5602d1b7dcf49d0eb3b13810c
-Index: kismet-2011-03-R2/config.h.in
+
+Index: kismet-debian/Makefile.in
 ===================================================================
---- kismet-2011-03-R2.orig/config.h.in	2010-08-25 06:07:29.000000000 +0200
-+++ kismet-2011-03-R2/config.h.in	2012-12-03 06:09:00.853644669 +0100
+--- kismet-debian.orig/Makefile.in	2013-02-22 01:10:02.496660127 +0100
++++ kismet-debian/Makefile.in	2013-02-22 01:10:03.472660169 +0100
+@@ -90,7 +90,7 @@
+ 	$(LD) $(LDFLAGS) -o $(PS) $(PSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(KSLIBS)
+ 
+ $(CS):	$(CSO)
+-	$(LD) $(LDFLAGS) -o $(CS) $(CSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(CAPLIBS)
++	$(LD) $(LDFLAGS) -o $(CS) $(CSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(CAPLIBS) $(KSLIBS)
+ 
+ $(DRONE):	$(DRONEO) $(CS)
+ 	$(LD) $(LDFLAGS) -o $(DRONE) $(DRONEO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(KSLIBS)
+Index: kismet-debian/config.h.in
+===================================================================
+--- kismet-debian.orig/config.h.in	2013-02-22 01:10:02.496660127 +0100
++++ kismet-debian/config.h.in	2013-02-22 01:10:03.472660169 +0100
 @@ -12,9 +12,6 @@
  /* libairpcap header */
  #undef HAVE_AIRPCAP_H
@@ -78,11 +93,176 @@ Index: kismet-2011-03-R2/config.h.in
  /* pcap/pcap.h */
  #undef HAVE_PCAPPCAP_H
  
-Index: kismet-2011-03-R2/configure
+Index: kismet-debian/configure.in
 ===================================================================
---- kismet-2011-03-R2.orig/configure	2010-08-25 18:12:30.000000000 +0200
-+++ kismet-2011-03-R2/configure	2012-12-03 06:11:44.237651443 +0100
-@@ -601,6 +601,10 @@
+--- kismet-debian.orig/configure.in	2013-02-22 01:10:02.496660127 +0100
++++ kismet-debian/configure.in	2013-02-22 01:10:03.476660169 +0100
+@@ -844,14 +844,14 @@
+ 	radiotaploc="system (BSD)"
+ fi
+ 
+-havenetlink=no
++# havenetlink=no
+ if test "$linux" = "yes"; then
++# havenetlink=yes
++# 	AC_CHECK_HEADERS([asm/types.h netlink/genl/genl.h netlink/genl/family.h netlink/genl/ctrl.h netlink/msg.h netlink/attr.h linux/nl80211.h linux/if_arp.h linux/wireless.h], 
++# 	AC_DEFINE(HAVE_NETLINKHEADERS, 1, Netlink headers are there), 
++# 	havenetlink=no,
++# 	[#include <sys/socket.h>])
+ havenetlink=yes
+-	AC_CHECK_HEADERS([asm/types.h netlink/genl/genl.h netlink/genl/family.h netlink/genl/ctrl.h netlink/msg.h netlink/attr.h linux/nl80211.h linux/if_arp.h linux/wireless.h], 
+-	AC_DEFINE(HAVE_NETLINKHEADERS, 1, Netlink headers are there), 
+-	havenetlink=no,
+-	[#include <sys/socket.h>])
+-
+ 
+ #if test "$havenetlink" = "yes"; then
+ #	AC_CHECK_LIB([nl], [nl_handle_alloc],
+@@ -860,24 +860,48 @@
+ #	AC_MSG_WARN(Missing libnl or libnl too old support will not be able to control mac80211 vaps)
+ #fi
+ 
++AC_CHECK_PROG(havepkgconfig, [pkg-config], yes, no)
++if test "$havepkgconfig" = "no"; then
++  AC_MSG_WARN(Missing pkg-config will lead to multiple other checks failing)
++fi
++
++NLLIBS=""
++NLCFLAGS=""
++nlname=""
++
+ if test "$havenetlink" = "yes"; then
++	PKG_CHECK_MODULES(libnl30, [libnl-3.0], libnl30=yes, libnl30=no)
++	PKG_CHECK_MODULES(libnlgenl30, [libnl-genl-3.0], libnlgenl30=yes, libnlgenl30=no)
+ 	PKG_CHECK_MODULES(libnl20, [libnl-2.0], libnl20=yes, libnl20=no)
+ 	PKG_CHECK_MODULES(libnl1, [libnl-1], libnl1=yes, libnl1=no)
+-	if test "$libnl20" = "yes"; then
++
++	if test "$libnl30" = "yes" -a "$libnlgenl30" = "yes"; then
++		AC_DEFINE(HAVE_LIBNL, 1, libnl netlink library)
++		AC_DEFINE(HAVE_LIBNL30, 1, libnl-3.0 netlink library)
++		nlname="libnl-3.0 libnl-genl-3.0"
++	elif test "$libnl20" = "yes"; then
+ 		AC_DEFINE(HAVE_LIBNL, 1, libnl netlink library)
+ 		AC_DEFINE(HAVE_LIBNL20, 1, libnl-2.0 netlink library)
+-		NLLIBS="-lnl-genl -lnl"
++		nlname="libnl-2.0"
+ 	elif test "$libnl1" = "yes"; then
+ 		AC_DEFINE(HAVE_LIBNL, 1, libnl netlink library)
+-		NLLIBS="-lnl"
++		nlname="libnl-1"
+ 	else
+ 		havenetlink="no"
+ 	fi
++
++	if test "$nlname" != ""; then
++		NLLIBS=`pkg-config --libs $nlname`
++		NLCFLAGS=`pkg-config --cflags $nlname`
++	fi
+ fi
+ 
+ if test "$havenetlink" = "yes"; then
+ 	OLIBS="$LIBS"
+ 	LIBS="$LIBS $NLLIBS"
++	OCFL="$CPPFLAGS"
++	CPPFLAGS="$CPPFLAGS $NLCFLAGS"
++
+ 	AC_MSG_CHECKING(For mac80211 support in netlink library)
+ 	AC_LINK_IFELSE([AC_LANG_PROGRAM([[
+ 			#include <stdio.h>
+@@ -894,7 +918,9 @@
+ 			NL80211_IFTYPE_MONITOR;
+ 			NL80211_CMD_NEW_INTERFACE;
+ 			return 0;
+-			]])],[havenetlink=yes],[havenetlink=no LIBS="$OLIBS"])
++			]])],[havenetlink=yes KSLIBS="$KSLIBS $NLLIBS"],[havenetlink=no])
++	
++	LIBS="$OLIBS"
+ else
+ 	AC_MSG_WARN(Missing libnl netlink library will not be able to control mac80211 vaps)
+ 	havenetlink=no
+@@ -903,8 +929,6 @@
+ if test "$havenetlink" = "yes"; then
+ 	AC_MSG_RESULT(yes)
+ 	AC_DEFINE(HAVE_LINUX_NETLINK, 1, Netlink works) 
+-else
+-	AC_MSG_RESULT(libnl detected but no support for mac80211 your kernel is probably too old for mac80211 or nl80211 upgrade your kernel then reinstall the latest netlink to get mac80211 support.)
+ fi
+ 
+ fi
+@@ -1034,7 +1058,7 @@
+ 
+ printf "         Linux Netlink: "
+ if test "$havenetlink" = "yes"; then
+-	echo "yes (mac80211 VAP creation)";
++	echo "yes (mac80211 VAP creation) - $nlname";
+ elif test "$linux" != "yes"; then
+ 	echo "n/a (only Linux)"
+ else
+@@ -1069,6 +1093,13 @@
+ 	echo "libpcap-dev or libpcap-devel by most distributions)."
+ fi
+ 
++if test "$havepkgconfig" = "no"; then
++	echo
++	echo "pkg-config was missing.  Without it, configure cannot detect "
++	echo "several libraries Kismet needs.  Install pkg-config and re-run"
++	echo "configure."
++fi
++
+ if test "$havenetlink" != "yes" -a "$linux" = "yes"; then
+ 	echo "*** WARNING ***"
+ 	echo "LibNL/nl80211 support was not found.  Kismet uses libnl to control "
+@@ -1077,6 +1108,12 @@
+ 	echo "older drivers, you need libnl."
+ 	echo "You need both the libnl libraries and development headers (called "
+ 	echo "libnl-dev or libnl-devel by most distributions)."
++
++	if test "$havepkgconfig" = "no"; then
++		echo "You do not have the pkg-config utility installed.  Kismet needs "
++		echo "this to find the options libnl uses.  If libnl is installed but "
++		echo "pkg-config is not, Kismet will not detect libnl!"
++	fi
+ fi
+ 
+ if test "`echo $host_os | grep linux`" = ""; then
+Index: kismet-debian/nl80211_control.cc
+===================================================================
+--- kismet-debian.orig/nl80211_control.cc	2013-02-22 01:10:02.496660127 +0100
++++ kismet-debian/nl80211_control.cc	2013-02-22 01:10:03.476660169 +0100
+@@ -18,6 +18,10 @@
+ 
+ #include "config.h"
+ 
++#if defined(HAVE_LIBNL20) || defined(HAVE_LIBNL30)
++#define HAVE_LIBNL_NG
++#endif
++
+ #ifdef SYS_LINUX
+ 
+ #ifdef HAVE_LINUX_NETLINK
+@@ -29,6 +33,7 @@
+ #include <netlink/msg.h>
+ #include <netlink/attr.h>
+ #include <netlink/netlink.h>
++#include <netlink/socket.h>
+ #include "nl80211.h"
+ #include <net/if.h>
+ #endif
+@@ -44,7 +49,7 @@
+ #include "nl80211_control.h"
+ 
+ // Libnl1->Libnl2 compatability mode since the API changed, cribbed from 'iw'
+-#if !defined(HAVE_LIBNL20) && defined(HAVE_LINUX_NETLINK)
++#if !defined(HAVE_LIBNL_NG)
+ #define nl_sock nl_handle
+ 
+ static inline struct nl_handle *nl_socket_alloc(void) {
+Index: kismet-debian/configure
+===================================================================
+--- kismet-debian.orig/configure	2013-02-22 01:10:02.496660127 +0100
++++ kismet-debian/configure	2013-02-22 01:10:03.492660169 +0100
+@@ -629,9 +629,14 @@
  libnl1_CFLAGS
  libnl20_LIBS
  libnl20_CFLAGS
@@ -93,7 +273,11 @@ Index: kismet-2011-03-R2/configure
  PKG_CONFIG_LIBDIR
  PKG_CONFIG_PATH
  PKG_CONFIG
-@@ -712,6 +716,10 @@
++havepkgconfig
+ pcap
+ pcaplnk
+ wantpcap
+@@ -740,6 +745,10 @@
  PKG_CONFIG
  PKG_CONFIG_PATH
  PKG_CONFIG_LIBDIR
@@ -104,7 +288,7 @@ Index: kismet-2011-03-R2/configure
  libnl20_CFLAGS
  libnl20_LIBS
  libnl1_CFLAGS
-@@ -1361,6 +1369,14 @@
+@@ -1388,6 +1397,14 @@
                directories to add to pkg-config's search path
    PKG_CONFIG_LIBDIR
                path overriding pkg-config's built-in search path
@@ -119,12 +303,12 @@ Index: kismet-2011-03-R2/configure
    libnl20_CFLAGS
                C compiler flags for libnl20, overriding pkg-config
    libnl20_LIBS
-@@ -6608,29 +6624,14 @@
+@@ -6635,28 +6652,14 @@
  	radiotaploc="system (BSD)"
  fi
  
 -havenetlink=no
-+#havenetlink=no
++# havenetlink=no
  if test "$linux" = "yes"; then
 +# havenetlink=yes
 +# 	AC_CHECK_HEADERS([asm/types.h netlink/genl/genl.h netlink/genl/family.h netlink/genl/ctrl.h netlink/msg.h netlink/attr.h linux/nl80211.h linux/if_arp.h linux/wireless.h],
@@ -137,8 +321,7 @@ Index: kismet-2011-03-R2/configure
 -  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
 -ac_fn_c_check_header_compile "$LINENO" "$ac_header" "$as_ac_Header" "#include <sys/socket.h>
 -"
--eval as_val=\$$as_ac_Header
--   if test "x$as_val" = x""yes; then :
+-if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
 -  cat >>confdefs.h <<_ACEOF
 -#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
 -_ACEOF
@@ -155,10 +338,53 @@ Index: kismet-2011-03-R2/configure
  
  #if test "$havenetlink" = "yes"; then
  #	AC_CHECK_LIB([nl], [nl_handle_alloc],
-@@ -6639,6 +6640,10 @@
+@@ -6665,6 +6668,53 @@
  #	AC_MSG_WARN(Missing libnl or libnl too old support will not be able to control mac80211 vaps)
  #fi
  
++# Extract the first word of "pkg-config", so it can be a program name with args.
++set dummy pkg-config; ac_word=$2
++{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
++$as_echo_n "checking for $ac_word... " >&6; }
++if ${ac_cv_prog_havepkgconfig+:} false; then :
++  $as_echo_n "(cached) " >&6
++else
++  if test -n "$havepkgconfig"; then
++  ac_cv_prog_havepkgconfig="$havepkgconfig" # Let the user override the test.
++else
++as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
++for as_dir in $PATH
++do
++  IFS=$as_save_IFS
++  test -z "$as_dir" && as_dir=.
++    for ac_exec_ext in '' $ac_executable_extensions; do
++  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
++    ac_cv_prog_havepkgconfig="yes"
++    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
++    break 2
++  fi
++done
++  done
++IFS=$as_save_IFS
++
++  test -z "$ac_cv_prog_havepkgconfig" && ac_cv_prog_havepkgconfig="no"
++fi
++fi
++havepkgconfig=$ac_cv_prog_havepkgconfig
++if test -n "$havepkgconfig"; then
++  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $havepkgconfig" >&5
++$as_echo "$havepkgconfig" >&6; }
++else
++  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
++$as_echo "no" >&6; }
++fi
++
++
++if test "$havepkgconfig" = "no"; then
++  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Missing pkg-config will lead to multiple other checks failing" >&5
++$as_echo "$as_me: WARNING: Missing pkg-config will lead to multiple other checks failing" >&2;}
++fi
++
 +NLLIBS=""
 +NLCFLAGS=""
 +nlname=""
@@ -166,15 +392,7 @@ Index: kismet-2011-03-R2/configure
  if test "$havenetlink" = "yes"; then
  
  
-@@ -6646,6 +6651,7 @@
- 
- 
- 
-+
- if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
- 	if test -n "$ac_tool_prefix"; then
-   # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-@@ -6761,6 +6767,148 @@
+@@ -6788,6 +6838,148 @@
  fi
  
  pkg_failed=no
@@ -323,63 +541,7 @@ Index: kismet-2011-03-R2/configure
  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for libnl20" >&5
  $as_echo_n "checking for libnl20... " >&6; }
  
-@@ -6774,6 +6922,7 @@
-   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-   test $ac_status = 0; }; then
-   pkg_cv_libnl20_CFLAGS=`$PKG_CONFIG --cflags "libnl-2.0" 2>/dev/null`
-+		      test "x$?" != "x0" && pkg_failed=yes
- else
-   pkg_failed=yes
- fi
-@@ -6790,6 +6939,7 @@
-   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-   test $ac_status = 0; }; then
-   pkg_cv_libnl20_LIBS=`$PKG_CONFIG --libs "libnl-2.0" 2>/dev/null`
-+		      test "x$?" != "x0" && pkg_failed=yes
- else
-   pkg_failed=yes
- fi
-@@ -6809,9 +6959,9 @@
-         _pkg_short_errors_supported=no
- fi
-         if test $_pkg_short_errors_supported = yes; then
--	        libnl20_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libnl-2.0" 2>&1`
-+	        libnl20_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libnl-2.0" 2>&1`
-         else
--	        libnl20_PKG_ERRORS=`$PKG_CONFIG --print-errors "libnl-2.0" 2>&1`
-+	        libnl20_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libnl-2.0" 2>&1`
-         fi
- 	# Put the nasty error message in config.log where it belongs
- 	echo "$libnl20_PKG_ERRORS" >&5
-@@ -6843,6 +6993,7 @@
-   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-   test $ac_status = 0; }; then
-   pkg_cv_libnl1_CFLAGS=`$PKG_CONFIG --cflags "libnl-1" 2>/dev/null`
-+		      test "x$?" != "x0" && pkg_failed=yes
- else
-   pkg_failed=yes
- fi
-@@ -6859,6 +7010,7 @@
-   $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
-   test $ac_status = 0; }; then
-   pkg_cv_libnl1_LIBS=`$PKG_CONFIG --libs "libnl-1" 2>/dev/null`
-+		      test "x$?" != "x0" && pkg_failed=yes
- else
-   pkg_failed=yes
- fi
-@@ -6878,9 +7030,9 @@
-         _pkg_short_errors_supported=no
- fi
-         if test $_pkg_short_errors_supported = yes; then
--	        libnl1_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors "libnl-1" 2>&1`
-+	        libnl1_PKG_ERRORS=`$PKG_CONFIG --short-errors --print-errors --cflags --libs "libnl-1" 2>&1`
-         else
--	        libnl1_PKG_ERRORS=`$PKG_CONFIG --print-errors "libnl-1" 2>&1`
-+	        libnl1_PKG_ERRORS=`$PKG_CONFIG --print-errors --cflags --libs "libnl-1" 2>&1`
-         fi
- 	# Put the nasty error message in config.log where it belongs
- 	echo "$libnl1_PKG_ERRORS" >&5
-@@ -6897,27 +7049,44 @@
+@@ -6928,27 +7120,44 @@
  $as_echo "yes" >&6; }
  	libnl1=yes
  fi
@@ -427,7 +589,7 @@ Index: kismet-2011-03-R2/configure
  	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking For mac80211 support in netlink library" >&5
  $as_echo_n "checking For mac80211 support in netlink library... " >&6; }
  	cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-@@ -6947,12 +7116,14 @@
+@@ -6978,12 +7187,14 @@
  }
  _ACEOF
  if ac_fn_c_try_link "$LINENO"; then :
@@ -444,7 +606,7 @@ Index: kismet-2011-03-R2/configure
  else
  	{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: Missing libnl netlink library will not be able to control mac80211 vaps" >&5
  $as_echo "$as_me: WARNING: Missing libnl netlink library will not be able to control mac80211 vaps" >&2;}
-@@ -6965,9 +7136,6 @@
+@@ -6996,9 +7207,6 @@
  
  $as_echo "#define HAVE_LINUX_NETLINK 1" >>confdefs.h
  
@@ -454,7 +616,7 @@ Index: kismet-2011-03-R2/configure
  fi
  
  fi
-@@ -8369,7 +8537,7 @@
+@@ -8418,7 +8626,7 @@
  
  printf "         Linux Netlink: "
  if test "$havenetlink" = "yes"; then
@@ -463,7 +625,21 @@ Index: kismet-2011-03-R2/configure
  elif test "$linux" != "yes"; then
  	echo "n/a (only Linux)"
  else
-@@ -8412,6 +8580,12 @@
+@@ -8453,6 +8661,13 @@
+ 	echo "libpcap-dev or libpcap-devel by most distributions)."
+ fi
+ 
++if test "$havepkgconfig" = "no"; then
++	echo
++	echo "pkg-config was missing.  Without it, configure cannot detect "
++	echo "several libraries Kismet needs.  Install pkg-config and re-run"
++	echo "configure."
++fi
++
+ if test "$havenetlink" != "yes" -a "$linux" = "yes"; then
+ 	echo "*** WARNING ***"
+ 	echo "LibNL/nl80211 support was not found.  Kismet uses libnl to control "
+@@ -8461,6 +8676,12 @@
  	echo "older drivers, you need libnl."
  	echo "You need both the libnl libraries and development headers (called "
  	echo "libnl-dev or libnl-devel by most distributions)."
@@ -476,162 +652,3 @@ Index: kismet-2011-03-R2/configure
  fi
  
  if test "`echo $host_os | grep linux`" = ""; then
-Index: kismet-2011-03-R2/configure.in
-===================================================================
---- kismet-2011-03-R2.orig/configure.in	2010-08-25 18:12:30.000000000 +0200
-+++ kismet-2011-03-R2/configure.in	2012-12-03 06:12:09.457652488 +0100
-@@ -844,14 +844,14 @@
- 	radiotaploc="system (BSD)"
- fi
- 
--havenetlink=no
-+# havenetlink=no
- if test "$linux" = "yes"; then
-+# havenetlink=yes
-+# 	AC_CHECK_HEADERS([asm/types.h netlink/genl/genl.h netlink/genl/family.h netlink/genl/ctrl.h netlink/msg.h netlink/attr.h linux/nl80211.h linux/if_arp.h linux/wireless.h],
-+# 	AC_DEFINE(HAVE_NETLINKHEADERS, 1, Netlink headers are there),
-+# 	havenetlink=no,
-+# 	[#include <sys/socket.h>])
- havenetlink=yes
--	AC_CHECK_HEADERS([asm/types.h netlink/genl/genl.h netlink/genl/family.h netlink/genl/ctrl.h netlink/msg.h netlink/attr.h linux/nl80211.h linux/if_arp.h linux/wireless.h], 
--	AC_DEFINE(HAVE_NETLINKHEADERS, 1, Netlink headers are there), 
--	havenetlink=no,
--	[#include <sys/socket.h>])
--
- 
- #if test "$havenetlink" = "yes"; then
- #	AC_CHECK_LIB([nl], [nl_handle_alloc],
-@@ -860,24 +860,43 @@
- #	AC_MSG_WARN(Missing libnl or libnl too old support will not be able to control mac80211 vaps)
- #fi
- 
-+NLLIBS=""
-+NLCFLAGS=""
-+nlname=""
-+
- if test "$havenetlink" = "yes"; then
-+	PKG_CHECK_MODULES(libnl30, [libnl-3.0], libnl30=yes, libnl30=no)
-+	PKG_CHECK_MODULES(libnlgenl30, [libnl-genl-3.0], libnlgenl30=yes, libnlgenl30=no)
- 	PKG_CHECK_MODULES(libnl20, [libnl-2.0], libnl20=yes, libnl20=no)
- 	PKG_CHECK_MODULES(libnl1, [libnl-1], libnl1=yes, libnl1=no)
--	if test "$libnl20" = "yes"; then
-+
-+	if test "$libnl30" = "yes" -a "$libnlgenl30" = "yes"; then
-+		AC_DEFINE(HAVE_LIBNL, 1, libnl netlink library)
-+		AC_DEFINE(HAVE_LIBNL30, 1, libnl-3.0 netlink library)
-+		nlname="libnl-3.0 libnl-genl-3.0"
-+	elif test "$libnl20" = "yes"; then
- 		AC_DEFINE(HAVE_LIBNL, 1, libnl netlink library)
- 		AC_DEFINE(HAVE_LIBNL20, 1, libnl-2.0 netlink library)
--		NLLIBS="-lnl-genl -lnl"
-+		nlname="libnl-2.0"
- 	elif test "$libnl1" = "yes"; then
- 		AC_DEFINE(HAVE_LIBNL, 1, libnl netlink library)
--		NLLIBS="-lnl"
-+		nlname="libnl-1"
- 	else
- 		havenetlink="no"
- 	fi
-+
-+	if test "$nlname" != ""; then
-+		NLLIBS=`pkg-config --libs $nlname`
-+		NLCFLAGS=`pkg-config --cflags $nlname`
-+	fi
- fi
- 
- if test "$havenetlink" = "yes"; then
- 	OLIBS="$LIBS"
- 	LIBS="$LIBS $NLLIBS"
-+	OCFL="$CPPFLAGS"
-+	CPPFLAGS="$CPPFLAGS $NLCFLAGS"
-+
- 	AC_MSG_CHECKING(For mac80211 support in netlink library)
- 	AC_LINK_IFELSE([AC_LANG_PROGRAM([[
- 			#include <stdio.h>
-@@ -894,7 +913,9 @@
- 			NL80211_IFTYPE_MONITOR;
- 			NL80211_CMD_NEW_INTERFACE;
- 			return 0;
--			]])],[havenetlink=yes],[havenetlink=no LIBS="$OLIBS"])
-+			]])],[havenetlink=yes KSLIBS="$KSLIBS $NLLIBS"],[havenetlink=no])
-+
-+	LIBS="$OLIBS"
- else
- 	AC_MSG_WARN(Missing libnl netlink library will not be able to control mac80211 vaps)
- 	havenetlink=no
-@@ -903,8 +924,6 @@
- if test "$havenetlink" = "yes"; then
- 	AC_MSG_RESULT(yes)
- 	AC_DEFINE(HAVE_LINUX_NETLINK, 1, Netlink works) 
--else
--	AC_MSG_RESULT(libnl detected but no support for mac80211 your kernel is probably too old for mac80211 or nl80211 upgrade your kernel then reinstall the latest netlink to get mac80211 support.)
- fi
- 
- fi
-@@ -1034,7 +1053,7 @@
- 
- printf "         Linux Netlink: "
- if test "$havenetlink" = "yes"; then
--	echo "yes (mac80211 VAP creation)";
-+	echo "yes (mac80211 VAP creation) - $nlname";
- elif test "$linux" != "yes"; then
- 	echo "n/a (only Linux)"
- else
-@@ -1077,6 +1096,12 @@
- 	echo "older drivers, you need libnl."
- 	echo "You need both the libnl libraries and development headers (called "
- 	echo "libnl-dev or libnl-devel by most distributions)."
-+
-+	if test "$havepkgconfig" = "no"; then
-+		echo "You do not have the pkg-config utility installed.  Kismet needs "
-+		echo "this to find the options libnl uses.  If libnl is installed but "
-+		echo "pkg-config is not, Kismet will not detect libnl!"
-+	fi
- fi
- 
- if test "`echo $host_os | grep linux`" = ""; then
-Index: kismet-2011-03-R2/Makefile.in
-===================================================================
---- kismet-2011-03-R2.orig/Makefile.in	2012-12-03 04:10:22.921349576 +0100
-+++ kismet-2011-03-R2/Makefile.in	2012-12-03 06:05:51.729636827 +0100
-@@ -90,7 +90,7 @@
- 	$(LD) $(LDFLAGS) -o $(PS) $(PSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(KSLIBS)
- 
- $(CS):	$(CSO)
--	$(LD) $(LDFLAGS) -o $(CS) $(CSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(CAPLIBS)
-+	$(LD) $(LDFLAGS) -o $(CS) $(CSO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(CAPLIBS) $(KSLIBS)
- 
- $(DRONE):	$(DRONEO) $(CS)
- 	$(LD) $(LDFLAGS) -o $(DRONE) $(DRONEO) $(LIBS) $(CXXLIBS) $(PCAPLNK) $(KSLIBS)
-Index: kismet-2011-03-R2/nl80211_control.cc
-===================================================================
---- kismet-2011-03-R2.orig/nl80211_control.cc	2009-08-12 23:22:04.000000000 +0200
-+++ kismet-2011-03-R2/nl80211_control.cc	2012-12-03 06:05:51.733636828 +0100
-@@ -18,6 +18,10 @@
- 
- #include "config.h"
- 
-+#if defined(HAVE_LIBNL20) || defined(HAVE_LIBNL30)
-+#define HAVE_LIBNL_NG
-+#endif
-+
- #ifdef SYS_LINUX
- 
- #ifdef HAVE_LINUX_NETLINK
-@@ -29,6 +33,7 @@
- #include <netlink/msg.h>
- #include <netlink/attr.h>
- #include <netlink/netlink.h>
-+#include <netlink/socket.h>
- #include "nl80211.h"
- #include <net/if.h>
- #endif
-@@ -44,7 +49,7 @@
- #include "nl80211_control.h"
- 
- // Libnl1->Libnl2 compatability mode since the API changed, cribbed from 'iw'
--#if !defined(HAVE_LIBNL20) && defined(HAVE_LINUX_NETLINK)
-+#if !defined(HAVE_LIBNL_NG)
- #define nl_sock nl_handle
- 
- static inline struct nl_handle *nl_socket_alloc(void) {

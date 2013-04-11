@@ -1,4 +1,5 @@
-50_fix_gpsmap_bashism
-60_support_for_libnl3
-70_fix_makefile
-80_fix_manpage
+fix_gpsmap_bashism
+fix_makefile
+fix_manpage
+kfreebsd_support
+support_for_libnl3
