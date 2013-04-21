@@ -3,8 +3,10 @@ kismet (2013.03.R1-1) UNRELEASED; urgency=low
   * New upstream release
   * Patches
     - Remove support_for_libnl3, included upstream
+  * Explicitly declare manpages to be installed
+    - Add debian/kismet.manpages
 
- -- Nick Andrik <nick.andrik@gmail.com>  Thu, 11 Apr 2013 04:21:55 +0200
+ -- Nick Andrik <nick.andrik@gmail.com>  Mon, 22 Apr 2013 01:45:38 +0200
 
 kismet (2011.03.R2-2) unstable; urgency=low
 
