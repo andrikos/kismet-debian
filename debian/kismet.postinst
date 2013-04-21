@@ -33,21 +33,21 @@ if [ -e "$PROGRAM" ]; then
 				done
 			fi
 
+			echo "Installing Kismet with suid-root capture helper ..."
 			chown root:$GROUP $PROGRAM
+			chmod u=rwxs,g=rx,o=r $PROGRAM
 
-			if which setcap > /dev/null ; then
-				echo "Installing Kismet suid-root capture helper and setting capabilities..."
-
-				chmod u=rwx,go=rx $PROGRAM
-				if ! setcap cap_net_raw,cap_net_admin=eip $PROGRAM; then
-					echo "Setting capabilities for kismet_capture using Linux Capabilities failed."
-					echo "Falling back to setting set-user-id bit."
-					chmod u=rwxs,g=rx,o=r $PROGRAM
-				fi
-			else
-				echo "Installing Kismet with suid-root capture helper..."
-				chmod u=rwxs,g=rx,o=r $PROGRAM
-			fi
+#			Just using capabilities is not enought for kismet, it needs suid anyway
+#			if which setcap > /dev/null ; then
+#				echo "... and setting capabilities"
+#
+#				if ! setcap cap_net_raw,cap_net_admin=eip $PROGRAM; then
+#					echo "Setting capabilities for kismet_capture using Linux Capabilities failed."
+#					echo "Falling back to setting set-user-id bit."
+#				else
+#					chmod u=rwx,go=rx $PROGRAM
+#				fi
+#			fi
 		fi
 	fi
 fi
