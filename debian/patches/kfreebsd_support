@@ -1,8 +1,8 @@
 Add support for kfreebsd architecture
 Index: kismet-debian/configure.in
 ===================================================================
---- kismet-debian.orig/configure.in	2013-02-22 00:23:03.360543252 +0100
-+++ kismet-debian/configure.in	2013-02-22 01:06:19.636650889 +0100
+--- kismet-debian.orig/configure.in	2013-04-21 18:23:32.224854426 +0200
++++ kismet-debian/configure.in	2013-04-21 18:26:20.310741300 +0200
 @@ -65,7 +65,7 @@
  		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS)
          linux="yes"
@@ -23,8 +23,8 @@ Index: kismet-debian/configure.in
  		bsd="yes"
 Index: kismet-debian/packetsource_bsdrt.cc
 ===================================================================
---- kismet-debian.orig/packetsource_bsdrt.cc	2013-02-22 00:23:03.376543254 +0100
-+++ kismet-debian/packetsource_bsdrt.cc	2013-02-22 00:38:16.780581121 +0100
+--- kismet-debian.orig/packetsource_bsdrt.cc	2013-04-21 18:23:32.224854426 +0200
++++ kismet-debian/packetsource_bsdrt.cc	2013-04-21 18:26:20.310741300 +0200
 @@ -27,6 +27,10 @@
  #include <net80211/ieee80211_ioctl.h>
  #endif
@@ -38,8 +38,8 @@ Index: kismet-debian/packetsource_bsdrt.cc
  
 Index: kismet-debian/packetsource_pcap.cc
 ===================================================================
---- kismet-debian.orig/packetsource_pcap.cc	2013-02-22 00:23:03.376543254 +0100
-+++ kismet-debian/packetsource_pcap.cc	2013-02-22 00:38:16.780581121 +0100
+--- kismet-debian.orig/packetsource_pcap.cc	2013-04-21 18:23:32.224854426 +0200
++++ kismet-debian/packetsource_pcap.cc	2013-04-21 18:26:20.310741300 +0200
 @@ -72,6 +72,7 @@
  #include <sys/socket.h>
  #include <net/if.h>
@@ -48,3 +48,25 @@ Index: kismet-debian/packetsource_pcap.cc
  
  #ifdef HAVE_RADIOTAP
  #include <net80211/ieee80211_ioctl.h>
+Index: kismet-debian/configure
+===================================================================
+--- kismet-debian.orig/configure	2013-04-21 18:23:32.224854426 +0200
++++ kismet-debian/configure	2013-04-21 18:29:12.812572658 +0200
+@@ -3710,7 +3710,7 @@
+ 
+         linux="yes"
+ 		;;
+-	freebsd*)
++	freebsd* | kfreebsd*)
+ 		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: none needed" >&5
+ $as_echo "none needed" >&6; }
+ 
+@@ -3794,7 +3794,7 @@
+ 
+         linux="yes"
+ 		;;
+-    freebsd*)
++    freebsd* | kfreebsd*)
+         { $as_echo "$as_me:${as_lineno-$LINENO}: result: none needed" >&5
+ $as_echo "none needed" >&6; }
+ 

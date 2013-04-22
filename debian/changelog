@@ -7,6 +7,7 @@ kismet (2013.03.R1-1) UNRELEASED; urgency=low
     - Add support for PLUGINCXXFLAGS in configure.in
     - Specify PLUGINCXXFLAGS in debian/rules
     - Update debian/patches/fix_makefile patch to use PLUGINCXXFLAGS
+    - Update configure file, since we patch configure.in
   * Also include restricted plugins
     - Add appropriate rules in debian/rules
   * Capabilities are used for suid dropping only, they cannot be used to avoid
