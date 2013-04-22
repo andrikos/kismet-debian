@@ -1,0 +1,409 @@
+Simplify plugin Makefiles
+
+Nick Andrik <nick.andrik@gmail.com>
+Index: kismet-debian/disable-plugin-dot15d4/Makefile
+===================================================================
+--- kismet-debian.orig/disable-plugin-dot15d4/Makefile	2013-04-21 18:11:11.542166069 +0200
++++ kismet-debian/disable-plugin-dot15d4/Makefile	2013-04-22 01:09:06.739260984 +0200
+@@ -1,46 +1,13 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ -lusb -lpthread
+-CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++LIBS	+= -lusb -lpthread
+ 
+ SRVOBJS = packetsource_raven.o packetsource_serialdev.o \
+ 			packet_dot15d4.o packet_dot15d4_types.o \
+ 			tracker_dot15d4.o kismet_dot15d4.o
+ SRVOUT	= dot15dot4.so
+ 
+-all:	$(SRVOUT) $(CLIOUT)
+-
+-$(CLIOUT):	$(CLIOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(CLIOBJS) -o $(CLIOUT) $(LIBS)
+-
+-$(SRVOUT):	$(SRVOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(SRVOBJS) -o $(SRVOUT) $(LIBS)
+-
+-install:	$(SRVOUT) $(CLIOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $^ $(DESTDIR)/$(plugindir)/$(SRVOUT)
+-
+-userinstall:	$(SRVOUT) $(CLIOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	$(INSTALL) -v $(SRVOUT) ${HOME}/.kismet/plugins/$(SRVOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/plugin-alertsyslog/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-alertsyslog/Makefile	2013-04-21 18:11:40.681799734 +0200
++++ kismet-debian/plugin-alertsyslog/Makefile	2013-04-22 01:09:06.791260331 +0200
+@@ -1,41 +1,9 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ 
+-CFLAGS 	+= -I/usr/include -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS 	+= -I/usr/include -I$(KIS_INC_DIR) -g -fPIC
+-
+ PLUGOBJS = alertsyslog.o
+ PLUGOUT = alertsyslog.so
+ 
+-all:	$(PLUGOUT)
+-
+-$(PLUGOUT):	$(PLUGOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(PLUGOBJS) -o $(PLUGOUT) $(LIBS)
+-
+-install:	$(PLUGOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	install -o $(INSTUSR) -g $(INSTGRP) -m 644 $^ $(DESTDIR)/$(plugindir)/$^
+-
+-userinstall:	$(PLUGOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	install $(PLUGOUT) ${HOME}/.kismet/plugins/$(PLUGOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/plugin-btscan/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-btscan/Makefile	2013-04-21 18:11:11.542166069 +0200
++++ kismet-debian/plugin-btscan/Makefile	2013-04-22 01:09:06.815260028 +0200
+@@ -1,16 +1,9 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ -lbluetooth -lpthread
+-CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS += -I$(KIS_INC_DIR) -g -fPIC
++LIBS	+= -lbluetooth -lpthread
+ 
+ SRVOBJS = packetsource_linuxbt.o tracker_btscan.o dumpfile_btscantxt.o kismet_btscan.o
+ SRVOUT	= btscan.so
+@@ -18,34 +11,4 @@
+ CLIOBJS	= btscan_ui.o
+ CLIOUT 	= btscan_ui.so
+ 
+-all:	$(SRVOUT) $(CLIOUT)
+-
+-$(CLIOUT):	$(CLIOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(CLIOBJS) -o $(CLIOUT) $(LIBS)
+-
+-$(SRVOUT):	$(SRVOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(SRVOBJS) -o $(SRVOUT) $(LIBS)
+-
+-install:	$(SRVOUT) $(CLIOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $(SRVOUT) $(DESTDIR)/$(plugindir)/$(SRVOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)_client
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $(CLIOUT) $(DESTDIR)/$(plugindir)_client/$(CLIOUT)
+-
+-userinstall:	$(SRVOUT) $(CLIOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	$(INSTALL) -v $(SRVOUT) ${HOME}/.kismet/plugins/$(SRVOUT)
+-	mkdir -p ${HOME}/.kismet/client_plugins/
+-	$(INSTALL) -v $(CLIOUT) ${HOME}/.kismet/client_plugins/$(CLIOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/plugin-spectools/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-spectools/Makefile	2013-04-21 18:11:11.542166069 +0200
++++ kismet-debian/plugin-spectools/Makefile	2013-04-22 01:09:06.823259928 +0200
+@@ -1,51 +1,12 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ 
+-CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-
+ CLIOBJS = spectools_ui.o
+ CLIOUT	= spectools_ui.so
+ 
+ SRVOBJS = spectool_netclient.o spectool_kismet.o
+ SRVOUT	= spectool_net.so
+ 
+-all:	$(SRVOUT) $(CLIOUT)
+-
+-$(CLIOUT):	$(CLIOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(CLIOBJS) -o $(CLIOUT) $(LIBS)
+-
+-$(SRVOUT):	$(SRVOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(SRVOBJS) -o $(SRVOUT) $(LIBS)
+-
+-install:	$(SRVOUT) $(CLIOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $(SRVOUT) $(DESTDIR)/$(plugindir)/$(SRVOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)_client
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $(CLIOUT) $(DESTDIR)/$(plugindir)_client/$(CLIOUT)
+-
+-userinstall:	$(SRVOUT) $(CLIOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	$(INSTALL) -v $(SRVOUT) ${HOME}/.kismet/plugins/$(SRVOUT)
+-	mkdir -p ${HOME}/.kismet/client_plugins/
+-	$(INSTALL) -v $(CLIOUT) ${HOME}/.kismet/client_plugins/$(CLIOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/plugin-syslog/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-syslog/Makefile	2013-04-21 18:11:11.542166069 +0200
++++ kismet-debian/plugin-syslog/Makefile	2013-04-22 01:09:06.839259727 +0200
+@@ -1,41 +1,9 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ 
+-CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-
+ PLUGOBJS = kismet-syslog.o
+ PLUGOUT = kismet-syslog.so
+ 
+-all:	$(PLUGOUT)
+-
+-$(PLUGOUT):	$(PLUGOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(PLUGOBJS) -o $(PLUGOUT) $(LIBS)
+-
+-install:	$(PLUGOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $^ $(DESTDIR)/$(plugindir)/$^
+-
+-userinstall:	$(PLUGOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	$(INSTALL) $(PLUGOUT) ${HOME}/.kismet/plugins/$(PLUGOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/restricted-plugin-autowep/Makefile
+===================================================================
+--- kismet-debian.orig/restricted-plugin-autowep/Makefile	2013-04-21 18:11:11.550165968 +0200
++++ kismet-debian/restricted-plugin-autowep/Makefile	2013-04-22 01:09:06.847259626 +0200
+@@ -1,41 +1,9 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ 
+-CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-
+ PLUGOBJS = autowep-kismet.o
+ PLUGOUT = autowep-kismet.so
+ 
+-all:	$(PLUGOUT)
+-
+-$(PLUGOUT):	$(PLUGOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(PLUGOBJS) -o $(PLUGOUT) $(LIBS)
+-
+-install:	$(PLUGOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $^ $(DESTDIR)/$(plugindir)/$^
+-
+-userinstall:	$(PLUGOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	$(INSTALL) $(PLUGOUT) ${HOME}/.kismet/plugins/$(PLUGOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/restricted-plugin-ptw/Makefile
+===================================================================
+--- kismet-debian.orig/restricted-plugin-ptw/Makefile	2013-04-21 18:11:11.570165716 +0200
++++ kismet-debian/restricted-plugin-ptw/Makefile	2013-04-22 01:09:06.855259526 +0200
+@@ -1,41 +1,11 @@
+ # You will need kismet newcore sources
+ KIS_SRC_DIR ?= /usr/src/kismet
+-KIS_INC_DIR ?= $(KIS_SRC_DIR)
+ 
+ include $(KIS_SRC_DIR)/Makefile.inc
+ 
+-BLDHOME	= .
+-top_builddir = $(BLDHOME)
+-
+-PLUGINLDFLAGS += -shared -rdynamic
+-LIBS	+= -lstdc++ -lssl -lpthread -lcrypto
+-CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++LIBS	+= -lssl -lpthread -lcrypto
+ 
+ PLUGOBJS = aircrack-crypto.o aircrack-ptw2-lib.o aircrack-kismet.o
+ PLUGOUT = aircrack-kismet.so
+ 
+-all:	$(PLUGOUT)
+-
+-$(PLUGOUT):	$(PLUGOBJS)
+-	$(LD) $(PLUGINLDFLAGS) $(PLUGOBJS) -o $(PLUGOUT) $(LIBS)
+-
+-install:	$(PLUGOUT)
+-	mkdir -p $(DESTDIR)/$(plugindir)
+-	$(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $^ $(DESTDIR)/$(plugindir)/$^
+-
+-userinstall:	$(PLUGOUT)
+-	mkdir -p ${HOME}/.kismet/plugins/
+-	$(INSTALL) $(PLUGOUT) ${HOME}/.kismet/plugins/$(PLUGOUT)
+-
+-clean:
+-	@-rm -f *.o
+-	@-rm -f *.so
+-
+-.c.o:
+-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+-
+-.cc.o:
+-	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+-
+-.SUFFIXES: .c .cc .o
++include $(KIS_SRC_DIR)/Makefile.plugins.inc
+Index: kismet-debian/Makefile.plugins.inc
+===================================================================
+--- /dev/null	1970-01-01 00:00:00.000000000 +0000
++++ kismet-debian/Makefile.plugins.inc	2013-04-22 01:13:10.764193174 +0200
+@@ -0,0 +1,44 @@
++KIS_INC_DIR ?= $(KIS_SRC_DIR)
++
++BLDHOME	= .
++top_builddir = $(BLDHOME)
++
++PLUGINLDFLAGS += -shared -rdynamic
++LIBS	+= -lstdc++
++CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++
++all:	$(PLUGOUT) $(SRVOUT) $(CLIOUT)
++
++$(PLUGOUT):	$(PLUGOBJS)
++	$(LD) $(PLUGINLDFLAGS) $(PLUGOBJS) -o $(PLUGOUT) $(LIBS)
++
++$(CLIOUT):	$(CLIOBJS)
++	$(LD) $(PLUGINLDFLAGS) $(CLIOBJS) -o $(CLIOUT) $(LIBS)
++
++$(SRVOUT):	$(SRVOBJS)
++	$(LD) $(PLUGINLDFLAGS) $(SRVOBJS) -o $(SRVOUT) $(LIBS)
++
++install:	$(PLUGOUT) $(SRVOUT) $(CLIOUT)
++	mkdir -p $(DESTDIR)/$(plugindir)
++	for x in $(PLUGOUT) $(SRVOUT); do $(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $$x $(DESTDIR)/$(plugindir)/$$x; done
++	mkdir -p $(DESTDIR)/$(plugindir)_client
++	for x in $(CLIOUT); do $(INSTALL) -o $(INSTUSR) -g $(INSTGRP) -m 644 $$x $(DESTDIR)/$(plugindir)_client/$$x; done
++
++userinstall:	$(PLUGOUT) $(SRVOUT) $(CLIOUT)
++	mkdir -p ${HOME}/.kismet/plugins/
++	for x in $(SRVOUT) $(PLUGOUT); do $(INSTALL) $$x ${HOME}/.kismet/plugins/$$x; done
++	mkdir -p ${HOME}/.kismet/client_plugins/
++	for x in $(CLIOUT); do $(INSTALL) $$x ${HOME}/.kismet/client_plugins/$$x; done
++
++clean:
++	@-rm -f *.o
++	@-rm -f *.so
++
++.c.o:
++	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@
++
++.cc.o:
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
++
++.SUFFIXES: .c .cc .o

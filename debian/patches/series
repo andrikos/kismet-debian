@@ -2,3 +2,4 @@ fix_gpsmap_bashism
 fix_makefile
 fix_manpage
 kfreebsd_support
+#simplify_plugin_makefiles
