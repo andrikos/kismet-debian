@@ -26,6 +26,7 @@ DEB_MAKE_ENVVARS += DESTDIR=$(DEB_DESTDIR)
 
 clean::
 	[ ! -f Makefile ] || $(DEB_MAKE_INVOKE) plugins-clean
+	[ ! -f Makefile ] || $(DEB_MAKE_INVOKE) restricted-plugins-clean
 	[ ! -f Makefile ] || $(DEB_MAKE_INVOKE) distclean
 	debconf-updatepo
 	
@@ -35,6 +36,8 @@ configure/kismet::
 
 build/kismet-plugins::
 	$(DEB_MAKE_INVOKE) plugins
+	$(DEB_MAKE_INVOKE) restricted-plugins
 
 install/kismet-plugins::
 	$(DEB_MAKE_INVOKE) plugins-install
+	$(DEB_MAKE_INVOKE) restricted-plugins-install
