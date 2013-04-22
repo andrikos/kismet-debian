@@ -1,14 +1,214 @@
 Allow different compile arguments to be used for programs and plugins
-Index: kismet-2011-03-R2/Makefile.inc.in
+Index: kismet-debian/Makefile.inc.in
 ===================================================================
---- kismet-2011-03-R2.orig/Makefile.inc.in	2009-11-06 03:43:30.000000000 +0100
-+++ kismet-2011-03-R2/Makefile.inc.in	2012-12-03 04:12:04.285353779 +0100
-@@ -22,7 +22,7 @@
+--- kismet-debian.orig/Makefile.inc.in	2013-04-21 18:02:12.468943137 +0200
++++ kismet-debian/Makefile.inc.in	2013-04-21 18:24:15.772306961 +0200
+@@ -23,7 +23,7 @@
  CLIBS   	= @CLIBS@
  CXXLIBS		= @CXXLIBS@
  KSLIBS		= @KSLIBS@
 -CFLAGS		= @CPPFLAGS@
-+CFLAGS		= @CPPFLAGS@ @CFLAGS@
++CFLAGS		= @CFLAGS@
  CLIENTLIBS 	= @CLIENTCLIBS@
  CAPLIBS		= @caplibs@
  CLIENTFLAGS = @CLIENTCFLAGS@
+@@ -41,5 +41,6 @@
+ LIB			= ${DESTDIR}@libdir@
+ WAV 		= ${DESTDIR}@datadir@/kismet/wav/
+ 
+-PLUGINLDFLAGS = @PLUGINLDFLAGS@ @LDFLAGS@
++PLUGINLDFLAGS  = @PLUGINLDFLAGS@
++PLUGINCXXFLAGS = @PLUGINCXXFLAGS@
+ 
+Index: kismet-debian/client-plugin-example/Makefile
+===================================================================
+--- kismet-debian.orig/client-plugin-example/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/client-plugin-example/Makefile	2013-04-21 18:11:11.530166215 +0200
+@@ -13,7 +13,7 @@
+ LDFLAGS	= -shared -rdynamic
+ LIBS	= -lstdc++ 
+ CFLAGS	= -fPIC
+-CXXFLAGS = -fPIC -pthread -DVERSION_MAJOR=\"$(VERSION_MAJOR)\" -DVERSION_MINOR=\"$(VERSION_MINOR)\" -DVERSION_TINY=\"$(VERSION_TINY)\" -DTIMESTAMP=\"`cat TIMESTAMP`\"
++PLUGINCXXFLAGS = -fPIC -pthread -DVERSION_MAJOR=\"$(VERSION_MAJOR)\" -DVERSION_MINOR=\"$(VERSION_MINOR)\" -DVERSION_TINY=\"$(VERSION_TINY)\" -DTIMESTAMP=\"`cat TIMESTAMP`\"
+ CPPFLAGS = -I/usr/include -I$(KIS_INC_DIR)
+ 
+ PLUGOBJS = kcliplug.o
+@@ -25,6 +25,6 @@
+ 	$(CC) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/configure
+===================================================================
+--- kismet-debian.orig/configure	2013-04-21 18:18:27.520685076 +0200
++++ kismet-debian/configure	2013-04-21 18:29:49.716108718 +0200
+@@ -652,6 +652,7 @@
+ EGREP
+ GREP
+ objc_link
++PLUGINCXXFLAGS
+ PLUGINLDFLAGS
+ CPP
+ SET_MAKE
+Index: kismet-debian/disable-plugin-dot15d4/Makefile
+===================================================================
+--- kismet-debian.orig/disable-plugin-dot15d4/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/disable-plugin-dot15d4/Makefile	2013-04-21 18:11:11.542166069 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ -lusb -lpthread
+ CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+ 
+ SRVOBJS = packetsource_raven.o packetsource_serialdev.o \
+ 			packet_dot15d4.o packet_dot15d4_types.o \
+@@ -41,6 +41,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/plugin-alertsyslog/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-alertsyslog/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/plugin-alertsyslog/Makefile	2013-04-21 18:11:40.681799734 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ 
+ CFLAGS 	+= -I/usr/include -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS 	+= -I/usr/include -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I/usr/include -I$(KIS_INC_DIR) -g -fPIC
+ 
+ PLUGOBJS = alertsyslog.o
+ PLUGOUT = alertsyslog.so
+@@ -36,6 +36,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/plugin-btscan/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-btscan/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/plugin-btscan/Makefile	2013-04-21 18:11:11.542166069 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ -lbluetooth -lpthread
+ CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS += -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS += -I$(KIS_INC_DIR) -g -fPIC
+ 
+ SRVOBJS = packetsource_linuxbt.o tracker_btscan.o dumpfile_btscantxt.o kismet_btscan.o
+ SRVOUT	= btscan.so
+@@ -46,6 +46,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/plugin-spectools/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-spectools/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/plugin-spectools/Makefile	2013-04-21 18:11:11.542166069 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ 
+ CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+ 
+ CLIOBJS = spectools_ui.o
+ CLIOUT	= spectools_ui.so
+@@ -46,6 +46,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/plugin-syslog/Makefile
+===================================================================
+--- kismet-debian.orig/plugin-syslog/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/plugin-syslog/Makefile	2013-04-21 18:11:11.542166069 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ 
+ CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+ 
+ PLUGOBJS = kismet-syslog.o
+ PLUGOUT = kismet-syslog.so
+@@ -36,6 +36,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/restricted-plugin-autowep/Makefile
+===================================================================
+--- kismet-debian.orig/restricted-plugin-autowep/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/restricted-plugin-autowep/Makefile	2013-04-21 18:11:11.550165968 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ 
+ CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+ 
+ PLUGOBJS = autowep-kismet.o
+ PLUGOUT = autowep-kismet.so
+@@ -36,6 +36,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/restricted-plugin-ptw/Makefile
+===================================================================
+--- kismet-debian.orig/restricted-plugin-ptw/Makefile	2013-03-25 18:29:11.000000000 +0100
++++ kismet-debian/restricted-plugin-ptw/Makefile	2013-04-21 18:11:11.570165716 +0200
+@@ -10,7 +10,7 @@
+ PLUGINLDFLAGS += -shared -rdynamic
+ LIBS	+= -lstdc++ -lssl -lpthread -lcrypto
+ CFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+-CXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
++PLUGINCXXFLAGS 	+= -I$(KIS_INC_DIR) -g -fPIC
+ 
+ PLUGOBJS = aircrack-crypto.o aircrack-ptw2-lib.o aircrack-kismet.o
+ PLUGOUT = aircrack-kismet.so
+@@ -36,6 +36,6 @@
+ 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $*.c -o $@ 
+ 
+ .cc.o:
+-	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
+ 
+ .SUFFIXES: .c .cc .o
+Index: kismet-debian/configure.in
+===================================================================
+--- kismet-debian.orig/configure.in	2013-04-21 18:18:27.520685076 +0200
++++ kismet-debian/configure.in	2013-04-21 18:29:27.604386699 +0200
+@@ -156,6 +156,7 @@
+ 
+ # Substitute in the objc linkages if we need them
+ AC_SUBST(PLUGINLDFLAGS)
++AC_SUBST(PLUGINCXXFLAGS)
+ AC_SUBST(objc_link)
+ 
+ if test "$cygwin" = "yes"; then

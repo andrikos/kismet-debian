@@ -3,6 +3,10 @@ kismet (2013.03.R1-1) UNRELEASED; urgency=low
   * New upstream release
   * libnl3 support
     - Remove debian/patches/support_for_libnl3, included upstream
+  * plugin hardening support
+    - Add support for PLUGINCXXFLAGS in configure.in
+    - Specify PLUGINCXXFLAGS in debian/rules
+    - Update debian/patches/fix_makefile patch to use PLUGINCXXFLAGS
   * Also include restricted plugins
     - Add appropriate rules in debian/rules
   * Capabilities are used for suid dropping only, they cannot be used to avoid

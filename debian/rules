@@ -15,7 +15,7 @@ DEB_AUTO_UPDATE_AUTOCONF	:= 1
 # since they are shared libraries)
 nopie = $(shell DEB_BUILD_MAINT_OPTIONS=$(DEB_BUILD_MAINT_OPTIONS),-pie dpkg-buildflags --get $(1))
 
-DEB_CONFIGURE_SCRIPT_ENV += PLUGINLDFLAGS="-fPIC $(call nopie,LDFLAGS)"
+DEB_CONFIGURE_SCRIPT_ENV += PLUGINLDFLAGS="-fPIC $(call nopie,LDFLAGS)" PLUGINCXXFLAGS="$(call nopie,CXXFLAGS)"
 DEB_CONFIGURE_SYSCONFDIR := /etc/kismet
 
 DEB_MAKE_INSTALL_TARGET := suidinstall SUIDGROUP=root
