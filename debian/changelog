@@ -15,6 +15,7 @@ kismet (2013.03.R1b-1) UNRELEASED; urgency=low
     - Update debian/kismet.postinst
   * Explicitly declare manpages to be installed
     - Add debian/kismet.manpages
+  * Update debian/watch url to also include letters
 
  -- Nick Andrik <nick.andrik@gmail.com>  Mon, 22 Apr 2013 02:52:32 +0200
 
