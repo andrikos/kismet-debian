@@ -1,4 +1,4 @@
-kismet (2013.03.R1b-1) UNRELEASED; urgency=low
+kismet (2013.03.R1b-1) unstable; urgency=low
 
   * New upstream release
   * libnl3 support
@@ -17,7 +17,7 @@ kismet (2013.03.R1b-1) UNRELEASED; urgency=low
     - Add debian/kismet.manpages
   * Update debian/watch url to also include letters
 
- -- Nick Andrik <nick.andrik@gmail.com>  Mon, 22 Apr 2013 02:52:32 +0200
+ -- Nick Andrik <nick.andrik@gmail.com>  Thu, 25 Apr 2013 03:58:02 +0200
 
 kismet (2011.03.R2-2) unstable; urgency=low
 
