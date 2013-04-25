@@ -4,4 +4,3 @@ Type=Application
 Name=Kismet
 Exec=kismet
 Terminal=true
-

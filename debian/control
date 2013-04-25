@@ -48,5 +48,3 @@ Description: wireless sniffer and monitor - plugins
   * dot15d4: support for the 802.15.4 Personal Area Network protocol;
   * ptw: performs the Aircrack-NG PTW attack against captured data;
   * spectools: imports data from the spectools spectrum analyzer.
-
-
