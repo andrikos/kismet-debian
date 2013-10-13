@@ -4,3 +4,4 @@ Type=Application
 Name=Kismet
 Exec=kismet
 Terminal=true
+Categories=Network;Monitor;ConsoleOnly;
