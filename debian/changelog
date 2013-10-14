@@ -2,6 +2,7 @@ kismet (2013.03.R1b-2) unstable; urgency=low
 
   * Add categories to .desktop file (Closes: #718833)
   * Add Brazilian Portuguese translation for po-debconf (Closes: #719193)
+  * Remove an unneeded hardening override for kismet-plugins
 
  -- Nick Andrik <nick.andrik@gmail.com>  Mon, 14 Oct 2013 01:40:23 +0200
 
