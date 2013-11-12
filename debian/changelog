@@ -1,8 +1,9 @@
 kismet (2013.03.R1b-3) unstable; urgency=low
 
   * Fix an incorrect path for dpkg-statoverride (Closes: #729127)
+  * Bump policy to 3.9.5
 
- -- Nick Andrik <nick.andrik@gmail.com>  Tue, 12 Nov 2013 03:41:00 +0100
+ -- Nick Andrik <nick.andrik@gmail.com>  Tue, 12 Nov 2013 03:59:00 +0100
 
 kismet (2013.03.R1b-2) unstable; urgency=low
 
