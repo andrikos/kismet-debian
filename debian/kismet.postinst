@@ -14,14 +14,14 @@ if [ -e "$PROGRAM" ]; then
 		 echo "must be run with 'sudo'.  This is not the preferred nor most secure way "
 		 echo "to install Kismet."
 
-		 if [ -x /usr/sbin/dpkg-statoverride ] && \
-			 ! /usr/sbin/dpkg-statoverride --list $PROGRAM >/dev/null; then
+		 if [ -x /usr/bin/dpkg-statoverride ] && \
+			 ! /usr/bin/dpkg-statoverride --list $PROGRAM >/dev/null; then
 			 chown root:root $PROGRAM
 			 chmod u=rwx,go=rx $PROGRAM
 		 fi
 	else
-		if [ -x /usr/sbin/dpkg-statoverride ] && \
-			! /usr/sbin/dpkg-statoverride --list $PROGRAM >/dev/null; then
+		if [ -x /usr/bin/dpkg-statoverride ] && \
+			! /usr/bin/dpkg-statoverride --list $PROGRAM >/dev/null; then
 
 			addgroup --quiet --system $GROUP
 
