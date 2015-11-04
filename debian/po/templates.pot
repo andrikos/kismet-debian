@@ -1,6 +1,6 @@
-# PO debconf template translation of kismet
-# Copyright (C) 2013 THE kismet'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the kismet package.
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kismet\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
-"POT-Creation-Date: 2012-12-15 14:36+0100\n"
+"POT-Creation-Date: 2015-11-04 05:39+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -79,4 +79,19 @@ msgstr ""
 msgid ""
 "Note that currently logged-in users who are added to a group will typically "
 "need to log out and log in again before it is recognized."
+msgstr ""
+
+#. Type: error
+#. Description
+#: ../kismet.templates:4001
+msgid "The provided user list contains invalid usernames."
+msgstr ""
+
+#. Type: error
+#. Description
+#: ../kismet.templates:4001
+msgid ""
+"The users to be added to the kismet group have to be provided in a space-"
+"separated list of usernames. It seems that the following usernames are not "
+"valid: ${USERS}. Please revise the list."
 msgstr ""

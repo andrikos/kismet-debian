@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kismet 2011.03.R2-1\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
-"POT-Creation-Date: 2012-12-08 23:49+0100\n"
+"POT-Creation-Date: 2015-11-04 05:39+0100\n"
 "PO-Revision-Date: 2012-12-18 21:15+0400\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
@@ -100,3 +100,17 @@ msgstr ""
 "Заметим, что находящимся в системе пользователям и добавленным сейчас в "
 "группу, нужно выйти из системы и войти заново."
 
+#. Type: error
+#. Description
+#: ../kismet.templates:4001
+msgid "The provided user list contains invalid usernames."
+msgstr ""
+
+#. Type: error
+#. Description
+#: ../kismet.templates:4001
+msgid ""
+"The users to be added to the kismet group have to be provided in a space-"
+"separated list of usernames. It seems that the following usernames are not "
+"valid: ${USERS}. Please revise the list."
+msgstr ""

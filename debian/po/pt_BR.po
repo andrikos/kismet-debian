@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: kismet\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
-"POT-Creation-Date: 2012-12-15 14:36+0100\n"
+"POT-Creation-Date: 2015-11-04 05:39+0100\n"
 "PO-Revision-Date: 2013-08-02 16:12-0300\n"
 "Last-Translator: José de Figueiredo <deb.gnulinux@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <debian-l10n-portuguese@lists.debian."
@@ -27,47 +27,46 @@ msgstr "Instalar o Kismet com \"setuid root\"?"
 #. Description
 #: ../kismet.templates:2001
 msgid ""
-"Kismet needs root privileges for some of its functions. However, "
-"running it as root (\"sudo kismet\") is not recommended, since running all "
-"of the code with elevated privileges increases the risk of bugs doing "
-"system-wide damage. Instead Kismet can be installed with the \"setuid\" "
-"bit set, which will allow it to grant these privileges automatically to the "
-"processes that need them, excluding the user interface and packet decoding "
-"parts."
+"Kismet needs root privileges for some of its functions. However, running it "
+"as root (\"sudo kismet\") is not recommended, since running all of the code "
+"with elevated privileges increases the risk of bugs doing system-wide "
+"damage. Instead Kismet can be installed with the \"setuid\" bit set, which "
+"will allow it to grant these privileges automatically to the processes that "
+"need them, excluding the user interface and packet decoding parts."
 msgstr ""
 "O Kismet precisa de privilégios administrativos para algumas de suas "
 "funções. Entretanto, executá-lo como root (\"sudo kismet\") não é "
 "recomendado, porque executar todo o código com privilégios elevados aumenta "
 "o risco de bugs causarem danos maiores ao sistema. Por outro lado, o Kismet "
 "pode ser instalado com o bit \"setuid\" ativado, que permite execução com "
-"privilégios administrativos garantidos automaticamente para os processos "
-"que precisarem deles, excluindo a interface de usuário e decodificação de "
+"privilégios administrativos garantidos automaticamente para os processos que "
+"precisarem deles, excluindo a interface de usuário e decodificação de "
 "pacotes."
 
 #. Type: boolean
 #. Description
 #: ../kismet.templates:2001
 msgid ""
-"Enabling this feature allows users in the \"kismet\" group to run "
-"Kismet (and capture packets, change wireless card state, etc), so only "
-"thoroughly trusted users should be granted membership of the group."
+"Enabling this feature allows users in the \"kismet\" group to run Kismet "
+"(and capture packets, change wireless card state, etc), so only thoroughly "
+"trusted users should be granted membership of the group."
 msgstr ""
-"Habilitando esta característica, permite-se aos usuários do grupo "
-"\"kismet\" executar o Kismet (e capturar pacotes, mudar o estado da placa "
-"wireless, etc), então somente usuários completamente confiáveis deverão "
-"ser membros do grupo."
+"Habilitando esta característica, permite-se aos usuários do grupo \"kismet\" "
+"executar o Kismet (e capturar pacotes, mudar o estado da placa wireless, "
+"etc), então somente usuários completamente confiáveis deverão ser membros do "
+"grupo."
 
 #. Type: boolean
 #. Description
 #: ../kismet.templates:2001
 msgid ""
 "For more detailed information, see section 4 of the Kismet README "
-"(\"Suidroot & Security\"), which can be found at "
-"/usr/share/doc/kismet/README or \"http://www.kismetwireless.net/README\"."
+"(\"Suidroot & Security\"), which can be found at /usr/share/doc/kismet/"
+"README or \"http://www.kismetwireless.net/README\"."
 msgstr ""
-"Para informações mais detalhadas, veja a seção 4 do arquivo README "
-"do Kismet (\"Suidroot & Security\"), que pode ser encontrado em "
-"/usr/share/doc/kismet/README ou em \"http://www.kismetwireless.net/README\"."
+"Para informações mais detalhadas, veja a seção 4 do arquivo README do Kismet "
+"(\"Suidroot & Security\"), que pode ser encontrado em /usr/share/doc/kismet/"
+"README ou em \"http://www.kismetwireless.net/README\"."
 
 #. Type: string
 #. Description
@@ -79,29 +78,42 @@ msgstr "Usuários para adicionar no grupo kismet:"
 #. Description
 #: ../kismet.templates:3001
 msgid ""
-"Only users in the kismet group are able to use kismet under the setuid "
-"model."
+"Only users in the kismet group are able to use kismet under the setuid model."
 msgstr ""
-"Somente usuários do grupo kismet estão habilitados para usar o kismet "
-"no modo setuid."
+"Somente usuários do grupo kismet estão habilitados para usar o kismet no "
+"modo setuid."
 
 #. Type: string
 #. Description
 #: ../kismet.templates:3001
 msgid ""
-"Please specify the users to be added to the group, as a "
-"space-separated list."
+"Please specify the users to be added to the group, as a space-separated list."
 msgstr ""
-"Por favor, especifique os usuários que serão adicionados ao grupo, "
-"em uma lista separada por espaços."
+"Por favor, especifique os usuários que serão adicionados ao grupo, em uma "
+"lista separada por espaços."
 
 #. Type: string
 #. Description
 #: ../kismet.templates:3001
 msgid ""
-"Note that currently logged-in users who are added to a group will "
-"typically need to log out and log in again before it is recognized."
+"Note that currently logged-in users who are added to a group will typically "
+"need to log out and log in again before it is recognized."
 msgstr ""
-"Note que usuários logados no sistema, que forem adicionados a um "
-"grupo, tipicamente precisarão encerrar a sessão e efetuar o login novamente "
-"antes que esta modificação seja reconhecida."
+"Note que usuários logados no sistema, que forem adicionados a um grupo, "
+"tipicamente precisarão encerrar a sessão e efetuar o login novamente antes "
+"que esta modificação seja reconhecida."
+
+#. Type: error
+#. Description
+#: ../kismet.templates:4001
+msgid "The provided user list contains invalid usernames."
+msgstr ""
+
+#. Type: error
+#. Description
+#: ../kismet.templates:4001
+msgid ""
+"The users to be added to the kismet group have to be provided in a space-"
+"separated list of usernames. It seems that the following usernames are not "
+"valid: ${USERS}. Please revise the list."
+msgstr ""

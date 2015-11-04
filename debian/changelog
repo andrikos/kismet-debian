@@ -22,6 +22,7 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
     - Properly check the username list provided by the user (LP: #1172993)
       + Add appropriate entry in kismet.templates
       + Update kismet.config to perform the checks
+    - Update po-debconf
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 
