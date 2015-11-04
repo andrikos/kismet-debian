@@ -5,9 +5,11 @@ GROUP=kismet
 
 if [ "$1" = "purge" ] ; then
       if getent group $GROUP >/dev/null; then
-		if [ -x /usr/sbin/delgroup ]; then
+		if command -v delgroup > /dev/null; then
 			echo "Removing kismet group..."
 			delgroup --system $GROUP || echo "Could not remove kismet group."
+		else
+			echo "Cannot remove group $GROUP because delgroup command is not found"
 		fi
 	fi
 fi

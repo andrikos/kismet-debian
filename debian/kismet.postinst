@@ -10,21 +10,18 @@ GROUP=kismet
 if [ -e "$PROGRAM" ]; then
 	db_get kismet/install-setuid
 	if [ "$RET" = "false" ] ; then
-		 echo "Not installing Kismet with suid-root capture helper.  Kismet "
-		 echo "must be run with 'sudo'.  This is not the preferred nor most secure way "
-		 echo "to install Kismet."
+		echo "Not installing Kismet with suid-root capture helper.  Kismet "
+		echo "must be run with 'sudo'.  This is not the preferred nor most secure way "
+		echo "to install Kismet."
 
-		 if [ -x /usr/bin/dpkg-statoverride ] && \
-			 ! /usr/bin/dpkg-statoverride --list $PROGRAM >/dev/null; then
-			 chown root:root $PROGRAM
-			 chmod u=rwx,go=rx $PROGRAM
-		 fi
+		if ! dpkg-statoverride --list $PROGRAM >/dev/null; then
+			chown root:root $PROGRAM
+			chmod u=rwx,go=rx $PROGRAM
+		fi
 	else
-		if [ -x /usr/bin/dpkg-statoverride ] && \
-			! /usr/bin/dpkg-statoverride --list $PROGRAM >/dev/null; then
+		if ! dpkg-statoverride --list $PROGRAM >/dev/null; then
 
 			addgroup --quiet --system $GROUP
-
 			db_get kismet/install-users
 
 			if [ "$RET" != "" ]; then
