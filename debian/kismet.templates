@@ -37,3 +37,10 @@ _Description: Users to add to the kismet group:
  .
  Note that currently logged-in users who are added to a group will
  typically need to log out and log in again before it is recognized.
+
+Template: kismet/wrong_users
+Type: error
+_Description: The provided user list contains invalid usernames.
+ The users to be added to the kismet group have to be provided in a
+ space-separated list of usernames. It seems that the following usernames are
+ not valid: ${USERS}. Please revise the list.
