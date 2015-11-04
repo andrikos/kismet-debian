@@ -11,6 +11,9 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
     - Remove description of disabled dot15d4 plugin
     - Remove unused libusb-dev build-dep (Closes: #810425)
   * Remove absolute paths for programs in kismet.post{inst,rm}
+  * Desktop menu entry
+    - Populate Keywords field in kismet.desktop
+    - Remove unused kismet.menu since kismet.desktop is used instead
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 
