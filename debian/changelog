@@ -10,6 +10,9 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
     - Add description for syslog plugin
     - Remove description of disabled dot15d4 plugin
     - Remove unused libusb-dev build-dep (Closes: #810425)
+  * debian/watch
+    - Update URL to also check for .tar.xz files
+    - Add support for checking upstream PGP signature
   * Remove absolute paths for programs in kismet.post{inst,rm}
   * Desktop menu entry
     - Populate Keywords field in kismet.desktop

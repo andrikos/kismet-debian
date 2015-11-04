@@ -1,3 +1,3 @@
 version=3
-opts=versionmangle=s/-/./g \
- http://www.kismetwireless.net/code/kismet-([R0-9-]+.*)\.tar\.gz  debian uupdate
+opts=versionmangle=s/-/./g,pgpsigurlmangle=s/$/.asc/ \
+ http://www.kismetwireless.net/code/kismet-([R0-9-]+.*)\.tar\.[gx]z  debian uupdate
