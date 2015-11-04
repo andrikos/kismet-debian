@@ -17,6 +17,7 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
   * Desktop menu entry
     - Populate Keywords field in kismet.desktop
     - Remove unused kismet.menu since kismet.desktop is used instead
+  * General cleanup in debian/copyright
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 

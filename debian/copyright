@@ -12,7 +12,7 @@ Copyright:	2002-2008, Francois Gurin <matrix@debian.org>
 			2012, Nick Andrik <nick.andrik@gmail.com>
 License: GPL-2+
 
-Files: plugin-ptw/aircrack-kismet.cc plugin-dot15d4/kismet_dot15d4.cc plugin-btscan/kismet_btscan.cc
+Files: plugin-btscan/kismet_btscan.cc
 Copyright: 2008, Mike Kershaw <dragorn@kismetwireless.net>
 License: GPL-2+ with OpenSSL exception
 
@@ -28,16 +28,6 @@ License: GPL-2+
 
 Files: scripts/gpsmap-helper-earthamaps
 Copyright: 2004, Ryan W. Maple
-License: GPL-2+
-
-Files: plugin-ptw/aircrack-ptw2-lib.*
-Copyright:	2007-2008, Erik Tews
-			2007-2008, Andrei Pychkine
-			2007-2008, Ralf-Philipp Weinmann
-License: GPL-2+ with OpenSSL exception
-
-Files: plugin-ptw/aircrack-crypto.cc
-Copyright: 2001-2004, Christophe Devine
 License: GPL-2+
 
 Files: kismap/kismap.py
@@ -59,7 +49,7 @@ Copyright: 2006-2008, Johannes Berg <johannes@sipsolutions.net>
 		   2008, Michael Buesch <mb@bu3sch.de>
 		   2008, Luis R. Rodriguez <lrodriguez@atheros.com>
 		   2008, Jouni Malinen <jouni.malinen@atheros.com>
-License: permissive
+License: ISC
  Permission to use, copy, modify, and/or distribute this software for any
  purpose with or without fee is hereby granted, provided that the above
  copyright notice and this permission notice appear in all copies.
@@ -122,7 +112,7 @@ License: BSD-3-clause
 
 Files: install-sh
 Copyright: 1991, Massachusetts Institute of Technology
-License: permissive
+License: MIT-norepr
  Permission to use, copy, modify, distribute, and sell this software and its
  documentation for any purpose is hereby granted without fee, provided that
  the above copyright notice appear in all copies and that both that
