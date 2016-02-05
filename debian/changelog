@@ -4,6 +4,8 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
   * debian/patches
     - Add fix_typos patch to correct some spelling errors
     - Refresh existing patches
+  * debian/control
+    - Bump policy to 3.9.6
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 
