@@ -7,8 +7,7 @@ Vcs-Git: https://github.com/andrikos/kismet-debian.git
 Vcs-Browser: https://github.com/andrikos/kismet-debian
 Build-Depends: cdbs, debhelper(>=9), dpkg-dev (>= 1.16.1~), po-debconf,
  autotools-dev, libncurses5-dev, libpcap-dev, libpcre3-dev, pkg-config,
- libusb-dev, libssl-dev,
- libcap-dev [linux-any], libnl-genl-3-dev [linux-any],
+ libssl-dev, libcap-dev [linux-any], libnl-genl-3-dev [linux-any],
  libbluetooth-dev [linux-any]
 Standards-Version: 3.9.6
 
@@ -45,6 +44,6 @@ Description: wireless sniffer and monitor - plugins
  This package provides the following extra plugins for Kismet:
   * autowep: detects the WEP key from BSSID and SSID;
   * btscan: basic scan support for the 802.15.1 (Bluetooth) protocol;
-  * dot15d4: support for the 802.15.4 Personal Area Network protocol;
   * ptw: performs the Aircrack-NG PTW attack against captured data;
-  * spectools: imports data from the spectools spectrum analyzer.
+  * spectools: imports data from the spectools spectrum analyzer;
+  * syslog: provides supports for alerts using standard unix syslog services.

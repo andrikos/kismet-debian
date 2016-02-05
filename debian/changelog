@@ -7,6 +7,9 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
   * debian/control
     - Bump policy to 3.9.6
     - Add secure URIs for Vcs-* fields
+    - Add description for syslog plugin
+    - Remove description of disabled dot15d4 plugin
+    - Remove unused libusb-dev build-dep (Closes: #810425)
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 
