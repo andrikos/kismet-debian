@@ -85,6 +85,8 @@ enum SSID_fields {
 	SSID_beaconinfo, SSID_cryptset, SSID_cloaked,
 	SSID_firsttime, SSID_lasttime, SSID_maxrate, SSID_beaconrate,
 	SSID_packets, SSID_beacons, SSID_dot11d,
+        SSID_wps, SSID_wps_manuf, SSID_wps_device_name, SSID_wps_model_name,
+        SSID_wps_model_number, SSID_shown_msg_probe_nearby_ap,
 	SSID_maxfield
 };
 
@@ -215,6 +217,12 @@ public:
 			packets = 0;
 			beacons = 0;
 			dot11d_country = "XXX";
+                        wps = no_wps;
+                        wps_manuf = "";
+                        wps_device_name = "";
+                        wps_model_name = "";
+                        wps_model_number = "";
+                        shown_msg_probe_nearby_ap = 0;
 		}
 
 		inline adv_ssid_data& operator= (const adv_ssid_data& in) {
@@ -237,6 +245,14 @@ public:
 			dot11d_country = in.dot11d_country; 
 
 			dot11d_vec = in.dot11d_vec;
+
+                        wps = in.wps;
+                        wps_manuf = in.wps_manuf;
+                        wps_device_name = in.wps_device_name;
+                        wps_model_name = in.wps_model_name;
+                        wps_model_number = in.wps_model_number;
+                        
+                        shown_msg_probe_nearby_ap = in.shown_msg_probe_nearby_ap;
 
 			dirty = in.dirty;
 
@@ -276,7 +292,16 @@ public:
 
 		string dot11d_country;
 		vector<dot11d_range_info> dot11d_vec;
+                
+                uint8_t wps;
+                string wps_manuf;
+                string wps_device_name;
+                string wps_model_name;
+                string wps_model_number;
 
+                // Did we show the "probe for nearby APs with same SSID" message?
+                int shown_msg_probe_nearby_ap;
+                
 		// SSID is dirty and should be resent
 		int dirty;
 	};

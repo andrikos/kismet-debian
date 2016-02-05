@@ -231,6 +231,26 @@ int Dumpfile_Netxml::Flush() {
 				fprintf(xmlfile, "        <beaconrate>%d</beaconrate>\n",
 						m->second->beaconrate);
 
+			if (m->second->wps & wps_locked)
+                            fprintf(xmlfile, "        <wps>Locked</wps>\n");
+                        else {
+                            if (m->second->wps & wps_configured)
+                                fprintf(xmlfile, "        <wps>Configured</wps>\n");
+                            else if (m->second->wps & wps_not_configured)
+                                fprintf(xmlfile, "        <wps>Not Configured</wps>\n");
+                            else
+                                fprintf(xmlfile, "        <wps>No</wps>\n");
+                        }
+                        if (m->second->wps_manuf != "")
+                            fprintf(xmlfile, "        <wps-manuf>%s</wps-manuf>\n", m->second->wps_manuf.c_str());
+                        if (m->second->wps_device_name != "")
+                            fprintf(xmlfile, "        <dev-name>%s</dev-name>\n", m->second->wps_device_name.c_str());
+                        if (m->second->wps_model_name != "")
+                            fprintf(xmlfile, "        <model-name>%s</model-name>\n", m->second->wps_model_name.c_str());
+                        if (m->second->wps_model_number != "")
+                            fprintf(xmlfile, "        <model-num>%s</model-num>\n", m->second->wps_model_number.c_str());
+                                
+                        
 			if (m->second->cryptset == 0)
 				fprintf(xmlfile, "        <encryption>None</encryption>\n");
 			if (m->second->cryptset == crypt_wep)
@@ -271,6 +291,15 @@ int Dumpfile_Netxml::Flush() {
 				fprintf(xmlfile, "        <encryption>Fortress</encryption>\n");
 			if (m->second->cryptset & crypt_keyguard)
 				fprintf(xmlfile, "        <encryption>Keyguard</encryption>\n");
+			// WPA version
+			if (m->second->cryptset & crypt_version_wpa) {
+				if (m->second->cryptset & crypt_version_wpa2)
+					fprintf(xmlfile, "        <wpa-version>WPA+WPA2</wpa-version>\n");
+				else
+					fprintf(xmlfile, "        <wpa-version>WPA</wpa-version>\n");
+			}
+			else if (m->second->cryptset & crypt_version_wpa2)
+				fprintf(xmlfile, "        <wpa-version>WPA2</wpa-version>\n");
 
 			if (m->second->dot11d_vec.size() > 0) {
 				fprintf(xmlfile, "        <dot11d country=\"%s\">\n",
@@ -444,8 +473,13 @@ int Dumpfile_Netxml::Flush() {
 			fprintf(xmlfile, "    </ip-address>\n");
 		}
 
-		fprintf(xmlfile, "    <bsstimestamp>%llu</bsstimestamp>\n", 
-				(long long unsigned int) net->bss_timestamp);
+                uint64_t secs = (uint64_t)(net->bss_timestamp / 1000000);
+                time_t t_secs = (time_t)secs;
+                time_t t_upsince = net->last_time - t_secs;
+                string s_upsince = string(ctime((const time_t *) &(t_upsince)) + 4).substr(0, 15);
+
+		fprintf(xmlfile, "    <bsstimestamp>%s</bsstimestamp>\n", 
+				s_upsince.c_str());
 		fprintf(xmlfile, "    <cdp-device>%s</cdp-device>\n",
 				SanitizeXML(net->cdp_dev_id).c_str());
 		fprintf(xmlfile, "    <cdp-portid>%s</cdp-portid>\n",
@@ -501,7 +535,7 @@ int Dumpfile_Netxml::Flush() {
 			fprintf(xmlfile, "    <wireless-client number=\"%d\" type=\"%s\" "
 					"first-time=\"%.24s\" ",
 					clinum, ctype.c_str(),
-					ctime(&(cli->last_time)));
+					ctime(&(cli->first_time)));
 			fprintf(xmlfile, "last-time=\"%.24s\">\n",
 					ctime(&(cli->last_time)));
 

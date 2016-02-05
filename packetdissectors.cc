@@ -42,6 +42,45 @@
 // Handly little global so that it only has to do the ascii->mac_addr transform once
 mac_addr broadcast_mac = "FF:FF:FF:FF:FF:FF";
 
+// For 802.11n MCS calculations
+const int CH20GI800 = 0;
+const int CH20GI400 = 1;
+const int CH40GI800 = 2;
+const int CH40GI400 = 3;
+
+const double mcs_table[][4] = {{6.5,7.2,13.5,15},
+       {13,14.4,27,30},
+       {19.5,21.7,40.5,45},
+       {26,28.9,54,60},
+       {39,43.3,81,90},
+       {52,57.8,108,120},
+       {58.5,65,121.5,135},
+       {65,72.2,135,150},
+       {13,14.4,27,30},
+       {26,28.9,54,60},
+       {39,43.3,81,90},
+       {52,57.8,108,120},
+       {78,86.7,162,180},
+       {104,115.6,216,240},
+       {117,130,243,270},
+       {130,144.4,270,300},
+       {19.5,21.7,40.5,45},
+       {39,43.3,81,90},
+       {58.5,65,121.5,135},
+       {78,86.7,162,180},
+       {117,130,243,270},
+       {156,173.3,324,360},
+       {175.5,195,364.5,405},
+       {195,216.7,405,450},
+       {26,28.8,54,60},
+       {52,57.6,108,120},
+       {78,86.8,162,180},
+       {104,115.6,216,240},
+       {156,173.2,324,360},
+       {208,231.2,432,480},
+       {234,260,486,540},
+       {260,288.8,540,600}};
+
 const char *WEPKEY_fields_text[] = {
     "origin", "bssid", "key", "encrypted", "failed",
     NULL
@@ -1048,6 +1087,76 @@ int KisBuiltinDissector::ieee80211_dissector(kis_packet *in_pack) {
                 packinfo->corrupt = 1;
 			}
 
+			
+            // Match HT 802.11n tag
+            if ((tcitr = tag_cache_map.find(45)) != tag_cache_map.end()) {
+                tag_offset = tcitr->second[0];
+                // GetTagOffset returns us on the size byte
+                taglen = (chunk->data[tag_offset] & 0xFF);
+                if (tag_offset + taglen > chunk->length || taglen < 7) {
+                    // We're corrupt, set it and stop processing
+                    packinfo->corrupt = 1;
+                    in_pack->insert(_PCM(PACK_COMP_80211), packinfo);
+                    return 0;
+                }
+                // No need to check tag length from now on.
+                // Extract the capabilities from the next 2 bytes.
+                // Find out if 40 MHz channel width is supported
+                // and "40 MHz intolerant" bit is not set.
+                bool ch40;
+                if (((chunk->data[tag_offset + 1] & 0xFF) & 2) != 0 &&
+                    ((chunk->data[tag_offset + 2] & 0xFF) & 64) == 0)
+                    ch40 = true;
+                else
+                    ch40 = false;
+                // Find out if short GI is supported, taking into account only
+                // the wider channel width supported
+                bool gi400;
+                if (ch40) {
+                    if (((chunk->data[tag_offset + 1] & 0xFF) & 64) != 0)
+                        gi400 = true;
+                    else
+                        gi400 = false;
+                }
+                else { // Supports only 20 MHz
+                    if (((chunk->data[tag_offset + 1] & 0xFF) & 32) != 0)
+                        gi400 = true;
+                    else
+                        gi400 = false;
+                }
+                // Find out the MCS Index
+                // Iterate the 4 bytes of the MCS
+                int mcsindex = -1;
+                for (int i = 4; i < 8; i++) {
+                    int byte = chunk->data[tag_offset + i] & 0xFF;
+                    int pw = 1;
+                    // Iterate each bit of the current byte
+                    while ((byte & pw) != 0 && pw <= 128) {
+                        mcsindex += 1;
+                        pw *= 2;
+                    }
+                    if (pw <= 128) // Found the first unset bit
+                        break;
+                }
+                // Find out the maximum rate
+                double maxrate;
+                if (ch40) {
+                    if (gi400)
+                        maxrate = mcs_table[mcsindex][CH40GI400];
+                    else
+                        maxrate = mcs_table[mcsindex][CH40GI800];
+                }
+                else {
+                    if (gi400)
+                        maxrate = mcs_table[mcsindex][CH20GI400];
+                    else
+                        maxrate = mcs_table[mcsindex][CH20GI800];
+                }
+                if (packinfo->maxrate < maxrate)
+                    packinfo->maxrate = maxrate;
+            }
+            
+            
             // Find the offset of flag 3 and get the channel.   802.11a doesn't have 
             // this tag so we use the hardware channel, assigned at the beginning of 
             // GetPacketInfo
@@ -1068,6 +1177,126 @@ int KisBuiltinDissector::ieee80211_dissector(kis_packet *in_pack) {
                 packinfo->channel = (int) (chunk->data[tag_offset+1]);
             }
 
+            
+            
+            // Match WPS tag
+            if ((tcitr = tag_cache_map.find(221)) != tag_cache_map.end()) {
+                for (unsigned int tagct = 0; tagct < tcitr->second.size(); tagct++) {
+                    tag_offset = tcitr->second[tagct];
+                    unsigned int tag_orig = tag_offset + 1;
+                    unsigned int taglen = (chunk->data[tag_offset] & 0xFF);
+                    unsigned int offt = 0;
+
+                    if (tag_orig + taglen > chunk->length) {
+                        packinfo->corrupt = 1;
+                        in_pack->insert(_PCM(PACK_COMP_80211), packinfo);
+                        return 0;
+                    }
+                    
+                    // Match 221 tag header for WPS
+                    if (taglen < sizeof(WPS_SIG))
+                        continue;
+                    
+                    if (memcmp(&(chunk->data[tag_orig + offt]), WPS_SIG, sizeof(WPS_SIG)))
+                        continue;
+                    
+                    offt += sizeof(WPS_SIG); // Go to the beginning of the first data element
+                    
+                    // Iterate through the data elements
+                    for (;;) {
+                        // Check if we have the type and length (2 bytes each)
+                        if (offt + 4 > taglen) {
+                            packinfo->corrupt = 1;
+                            in_pack->insert(_PCM(PACK_COMP_80211), packinfo);
+                            return 0;
+                        }
+                        uint16_t type = kis_ntoh16(kis_extract16(&(chunk->data[tag_orig + offt])));
+                        uint16_t length = kis_ntoh16(kis_extract16(&(chunk->data[tag_orig + offt + 2])));
+                        if (offt + 4 + length > taglen) {
+                            packinfo->corrupt = 1;
+                            in_pack->insert(_PCM(PACK_COMP_80211), packinfo);
+                            return 0;
+                        }
+                        switch (type) {
+                            case 0x1044: { // State
+                                // Assume length == 1
+                                uint8_t state = chunk->data[tag_orig + offt + 4];
+                                switch (state) {
+                                    case 0x01:
+                                        packinfo->wps |= wps_not_configured;
+                                        break;
+                                    case 0x02:
+                                        packinfo->wps |= wps_configured;
+                                        break;
+                                }
+                                break;
+                            }
+                            case 0x1057: // AP Setup Locked
+                                // Assume length == 1
+                                if (chunk->data[tag_orig + offt + 4] == 0x01)
+                                    packinfo->wps |= wps_locked;
+                                break;
+                            case 0x1011: { // Device name
+                                char *cstr = new char[length + 1];
+                                for (int i = 0; i < length; i++)
+                                    cstr[i] = chunk->data[tag_orig + offt + 4 + i];
+                                cstr[length] = 0x00;
+                                packinfo->wps_device_name = cstr;
+                                delete[] cstr;
+                                break;
+                            }
+                            case 0x1021: { // Manufacturer
+                                char *cstr = new char[length + 1];
+                                for (int i = 0; i < length; i++)
+                                    cstr[i] = chunk->data[tag_orig + offt + 4 + i];
+                                cstr[length] = 0x00;
+                                packinfo->wps_manuf = cstr;
+                                delete[] cstr;
+                                break;
+                            }
+                            case 0x1023: { // Model name
+                                char *cstr = new char[length + 1];
+                                for (int i = 0; i < length; i++)
+                                    cstr[i] = chunk->data[tag_orig + offt + 4 + i];
+                                cstr[length] = 0x00;
+                                packinfo->wps_model_name = cstr;
+                                delete[] cstr;
+                                break;
+                            }
+                            case 0x1024: { // Model number
+                                char *cstr = new char[length + 1];
+                                for (int i = 0; i < length; i++)
+                                    cstr[i] = chunk->data[tag_orig + offt + 4 + i];
+                                cstr[length] = 0x00;
+                                packinfo->wps_model_number = cstr;
+                                delete[] cstr;
+                                break;
+                            }
+                            // We ignore these fields for now
+                            case 0x1008: // Configuration methods
+                            case 0x1012: // Device password ID
+                            case 0x103B: // Response type
+                            case 0x103C: // RF bands
+                            case 0x1041: // Selected registrar
+                            case 0x1042: // Serial number
+                            case 0x1047: // UUID enrollee
+                            case 0x1049: // Vendor extension
+                            case 0x104A: // Version
+                            case 0x1053: // Selected registrar configuration methods
+                            case 0x1054: // Primary device type
+                            default:
+                                break;
+                        }
+                        if (offt + 4 + length >= taglen)
+                            break; // No more data elements
+                        offt += 4 + length;
+                    }
+                    
+                }
+            } // WPS
+            
+            
+            
             if ((tcitr = tag_cache_map.find(7)) != tag_cache_map.end()) {
                 tag_offset = tcitr->second[0];
 
@@ -1169,6 +1398,9 @@ int KisBuiltinDissector::ieee80211_dissector(kis_packet *in_pack) {
 								break;
 							}
 						}
+						
+						// Set version flag
+						packinfo->cryptset |= crypt_version_wpa;
 					}
 				} /* 221 */
 
@@ -1230,6 +1462,9 @@ int KisBuiltinDissector::ieee80211_dissector(kis_packet *in_pack) {
 								break;
 							}
 						}
+						
+						// Set version flag
+						packinfo->cryptset |= crypt_version_wpa2;
 					}
 				} /* 48 */
 			}

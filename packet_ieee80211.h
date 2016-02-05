@@ -227,6 +227,17 @@ enum crypt_type {
 	crypt_fortress = (1 << 16),
 	crypt_keyguard = (1 << 17),
 	crypt_unknown_nonwep = (1 << 18),
+	// WPA version flags
+	crypt_version_wpa = (1 << 20),
+	crypt_version_wpa2 = (1 << 21),
+};
+
+// WPS State bitfield
+enum wps_state {
+    no_wps = 0,
+    wps_configured = 1,
+    wps_not_configured = (1 << 1),
+    wps_locked = (1 << 2)
 };
 
 // Deciphering by casting.  This is bad, and non portable, and we need to not

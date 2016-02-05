@@ -1,3 +1,9 @@
+kismet (2016.01.R1-1) UNRELEASED; urgency=medium
+
+  * New upstream release (Closes: #813801)
+
+ -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
+
 kismet (2013.03.R1b-3) unstable; urgency=low
 
   * Fix an incorrect path for dpkg-statoverride (Closes: #729127)

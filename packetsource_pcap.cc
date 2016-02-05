@@ -672,8 +672,10 @@ int PacketSource_Pcap::Radiotap2KisPack(kis_packet *packet, kis_datachunk *linkc
 
 	eight11chunk->dlt = KDLT_IEEE802_11;
 	
-    // iter = (u_char*)(last_presentp + 1);
-	iter_start = iter = (u_char*)(last_presentp + 1);
+   iter = (u_char*)(last_presentp + 1); 
+   // Alignment in Radiotap must be done from the beginning of the header, 
+   // not from the byte following the last bitmap. 
+   iter_start = (u_char*)(linkchunk->data); 
 
     for (bit0 = 0, presentp = &hdr->it_present; presentp <= last_presentp;
          presentp++, bit0 += 32) {
@@ -1144,6 +1146,22 @@ int PacketSource_Pcapfile::OpenSource() {
 	genericparms.weak_dissect = 1;
 	
 	return 1;
+}
+
+int PacketSource_Pcap::ParseOptions(vector<opt_pair> *in_opts) {
+	KisPacketSource::ParseOptions(in_opts);
+
+	// Force us to keep the primary interface still running
+	if (!FetchOptBoolean("validatefcs", in_opts, true)) {
+        validate_fcs = 0;
+
+		_MSG("Source '" + interface + "' will not validate frame checksums. "
+			 "If you notice large numbers of corrupted packets, remove "
+             "validatefcs=false from this source.",
+			 MSGFLAG_INFO);
+	}
+
+    return 1;
 }
 
 int PacketSource_Pcapfile::Poll() {

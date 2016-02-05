@@ -201,6 +201,25 @@ int Dumpfile_Nettxt::Flush() {
 				}
 			}
 
+			if (m->second->wps & wps_locked)
+                            fprintf(txtfile, "    WPS        : Locked\n");
+                        else {
+                            if (m->second->wps & wps_configured)
+                                fprintf(txtfile, "    WPS        : Configured\n");
+                            else if (m->second->wps & wps_not_configured)
+                                fprintf(txtfile, "    WPS        : Not Configured\n");
+                            else
+                                fprintf(txtfile, "    WPS        : No\n");
+                        }
+                        if (m->second->wps_manuf != "")
+                            fprintf(txtfile, "    WPS Manuf  : %s\n", m->second->wps_manuf.c_str());
+                        if (m->second->wps_device_name != "")
+                            fprintf(txtfile, "    Dev Name   : %s\n", m->second->wps_device_name.c_str());
+                        if (m->second->wps_model_name != "")
+                            fprintf(txtfile, "    Model Name : %s\n", m->second->wps_model_name.c_str());
+                        if (m->second->wps_model_number != "")
+                            fprintf(txtfile, "    Model Num  : %s\n", m->second->wps_model_number.c_str());
+                        
 			if (m->second->cryptset == 0)
 				fprintf(txtfile, "    Encryption : None\n");
 			if (m->second->cryptset == crypt_wep)
@@ -241,6 +260,15 @@ int Dumpfile_Nettxt::Flush() {
 				fprintf(txtfile, "    Encryption : Fortress\n");
 			if (m->second->cryptset & crypt_keyguard)
 				fprintf(txtfile, "    Encryption : Keyguard\n");
+			// WPA version
+			if (m->second->cryptset & crypt_version_wpa) {
+				if (m->second->cryptset & crypt_version_wpa2)
+					fprintf(txtfile, "    WPA Version: WPA+WPA2\n");
+				else
+					fprintf(txtfile, "    WPA Version: WPA\n");
+			}
+			else if (m->second->cryptset & crypt_version_wpa2)
+				fprintf(txtfile, "    WPA Version: WPA2\n");
 
 			ssidnum++;
 		}
@@ -333,9 +361,12 @@ int Dumpfile_Nettxt::Flush() {
 			fprintf(txtfile, " IP Gateway : %s\n", 
 					inet_ntoa(net->guess_ipdata.ip_gateway));
 		}
-
-		fprintf(txtfile, " Last BSSTS : %llu\n", 
-				(long long unsigned int) net->bss_timestamp);
+                
+                uint64_t secs = (uint64_t)(net->bss_timestamp / 1000000);
+                time_t t_secs = (time_t)secs;
+                time_t t_upsince = net->last_time - t_secs;
+                string s_upsince = string(ctime((const time_t *) &(t_upsince)) + 4).substr(0, 15);
+		fprintf(txtfile, " Last BSSTS : %s\n", s_upsince.c_str());
 
 		for (map<uuid, Netracker::source_data *>::iterator sdi = net->source_map.begin();
 			 sdi != net->source_map.end(); ++sdi) {
