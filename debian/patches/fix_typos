@@ -1,0 +1,53 @@
+Correct some spelling errors in the messages
+Index: b/plugintracker.h
+===================================================================
+--- a/plugintracker.h
++++ b/plugintracker.h
+@@ -39,7 +39,7 @@
+ // with.  These are used to make sure that the plugin is running in a sane environment.
+ //
+ // Plugins which operate as root WILL NOT be able to perform root actions after
+-// the privdrop has occured.  Currently there are no hooks to modularize the 
++// the privdrop has occurred.  Currently there are no hooks to modularize the
+ // server/rootpid system, this may change if needed in the future.  Open any
+ // files and sockets you need before the drop.
+ 
+Index: b/tcpserver.cc
+===================================================================
+--- a/tcpserver.cc
++++ b/tcpserver.cc
+@@ -349,7 +349,7 @@
+     write_buf_map[in_fd]->MarkRead(ret);
+ 
+ 	if (srvframework->BufferDrained(in_fd) < 0) {
+-		snprintf(errstr, STATUS_MAX, "TCP server: Error occured calling framework "
++		snprintf(errstr, STATUS_MAX, "TCP server: Error occurred calling framework "
+ 				 "buffer drain notification on client %s", 
+ 				 GetRemoteAddr(in_fd).c_str());
+ 		_MSG(errstr, MSGFLAG_ERROR);
+Index: b/unixdomainserver.cc
+===================================================================
+--- a/unixdomainserver.cc
++++ b/unixdomainserver.cc
+@@ -261,7 +261,7 @@
+     write_buf_map[in_fd]->MarkRead(ret);
+ 
+     if (srvframework->BufferDrained(in_fd) < 0) {
+-        _MSG("Unix domain server: Error occured calling framework buffer drain "
++        _MSG("Unix domain server: Error occurred calling framework buffer drain "
+              "notification on client " + GetRemoteAddr(in_fd), MSGFLAG_ERROR);
+         KillConnection(in_fd);
+         return -1;
+Index: b/man/kismet_drone.1
+===================================================================
+--- a/man/kismet_drone.1
++++ b/man/kismet_drone.1
+@@ -25,7 +25,7 @@
+ .PP
+ \fBkismet_drone\fP is controlled by the \fBkismet_drone.conf\fP config file.
+ .SH ENCRYPTION
+-It may be desireable to encrypt the packet stream between the remote drone and the 
++It may be desirable to encrypt the packet stream between the remote drone and the
+ kismet system.  Standard SSH packet tunneling or any other tunneling/forwarding system
+ may be used, and is recommended.
+ .SH SEE ALSO

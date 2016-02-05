@@ -1,6 +1,8 @@
 kismet (2016.01.R1-1) UNRELEASED; urgency=medium
 
   * New upstream release (Closes: #813801)
+  * debian/patches
+    - Add fix_typos patch to correct some spelling errors
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 
