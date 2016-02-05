@@ -2,13 +2,13 @@
 # Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
 #
-# Yuri Kozlov <yuray@komyakino.ru>, 2012.
+# Yuri Kozlov <yuray@komyakino.ru>, 2012, 2015.
 msgid ""
 msgstr ""
-"Project-Id-Version: kismet 2011.03.R2-1\n"
+"Project-Id-Version: kismet 2013.03.R1b-4\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
 "POT-Creation-Date: 2015-11-04 05:39+0100\n"
-"PO-Revision-Date: 2012-12-18 21:15+0400\n"
+"PO-Revision-Date: 2015-11-04 15:34+0300\n"
 "Last-Translator: Yuri Kozlov <yuray@komyakino.ru>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "Language: ru\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Lokalize 1.4\n"
+"X-Generator: Lokalize 1.5\n"
 
 #. Type: boolean
 #. Description
@@ -104,7 +104,7 @@ msgstr ""
 #. Description
 #: ../kismet.templates:4001
 msgid "The provided user list contains invalid usernames."
-msgstr ""
+msgstr "Введённый список пользователей содержит некорректные имена."
 
 #. Type: error
 #. Description
@@ -114,3 +114,7 @@ msgid ""
 "separated list of usernames. It seems that the following usernames are not "
 "valid: ${USERS}. Please revise the list."
 msgstr ""
+"Был предоставлен список имён пользователей через пробел для добавления в "
+"группу kismet. "
+"Кажется, что следующие имена некорректны: ${USERS}. Исправьте список."
+

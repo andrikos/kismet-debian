@@ -6,10 +6,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: kismet_2008-05-R1-4.3\n"
+"Project-Id-Version: kismet_2013.03.R1b-3+b1\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
 "POT-Creation-Date: 2015-11-04 05:39+0100\n"
-"PO-Revision-Date: 2012-11-22 08:45+0100\n"
+"PO-Revision-Date: 2015-11-23 17:05+0100\n"
 "Last-Translator: Steve R. Petruzzello <dlist@bluewin.ch>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
 "Language: \n"
@@ -107,7 +107,7 @@ msgstr ""
 #. Description
 #: ../kismet.templates:4001
 msgid "The provided user list contains invalid usernames."
-msgstr ""
+msgstr "Identifiants non valables dans la liste fournie"
 
 #. Type: error
 #. Description
@@ -117,3 +117,7 @@ msgid ""
 "separated list of usernames. It seems that the following usernames are not "
 "valid: ${USERS}. Please revise the list."
 msgstr ""
+"Les utilisateurs à ajouter au groupe kismet doivent être indiqués dans une "
+"liste d'identifiants séparés par des espaces. Il semble que les "
+"utilisateurs suivants ne sont pas valables : ${USERS}. Veuillez réviser la "
+"liste."

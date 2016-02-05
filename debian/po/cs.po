@@ -1,14 +1,14 @@
 # Czech PO debconf template translation of kismet.
-# Copyright (C) 2012 Michal Simunek <michal.simunek@gmail.com>
+# Copyright (C) 2012 - 2015 Michal Simunek <michal.simunek@gmail.com>
 # This file is distributed under the same license as the kismet package.
-# Michal Simunek <michal.simunek@gmail.com>, 2012.
+# Michal Simunek <michal.simunek@gmail.com>, 2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: kismet 2011.03.R2-1\n"
+"Project-Id-Version: kismet 2013.03.R1b-4\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
 "POT-Creation-Date: 2015-11-04 05:39+0100\n"
-"PO-Revision-Date: 2012-11-30 10:31+0100\n"
+"PO-Revision-Date: 2015-11-10 10:31+0100\n"
 "Last-Translator: Michal Simunek <michal.simunek@gmail.com>\n"
 "Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
 "Language: cs\n"
@@ -104,7 +104,7 @@ msgstr ""
 #. Description
 #: ../kismet.templates:4001
 msgid "The provided user list contains invalid usernames."
-msgstr ""
+msgstr "Zadaný seznam uživatelů obsahuje neplatná uživatelská jména."
 
 #. Type: error
 #. Description
@@ -114,3 +114,6 @@ msgid ""
 "separated list of usernames. It seems that the following usernames are not "
 "valid: ${USERS}. Please revise the list."
 msgstr ""
+"Uživatelé, kteří se mají přidat do skupiny kismet, musí být zadáni jako "
+"seznam uživatelských jmen oddělených mezerou. Následující uživatelská jména "
+"nejsou zřejmě platná: ${USERS}. Zkontrolujte prosím seznam."

@@ -1,26 +1,28 @@
-# Danish PO debconf template translation of kismet.
-# Copyright (C) 2015 kismet & nedenstående oversættere.
+# Dutch translation of kismet debconf templates.
+# Copyright (C) 2013 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
-# Joe Hansen <joedalton2@yahoo.dk>, 2012, 2015.
+# Frans Spiesschaert <Frans.Spiesschaert@yucom.be>, 2014, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: kismet\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
 "POT-Creation-Date: 2015-11-04 05:39+0100\n"
-"PO-Revision-Date: 2015-11-04 17:30+01:00\n"
-"Last-Translator: Joe Hansen <joedalton2@yahoo.dk>\n"
-"Language-Team: Danish <debian-l10n-danish@lists.debian.org>\n"
-"Language: da\n"
+"PO-Revision-Date: 2015-11-04 16:37+0100\n"
+"Last-Translator: Frans Spiesschaert <Frans.Spiesschaert@yucom.be>\n"
+"Language-Team: Debian Dutch l10n Team <debian-l10n-dutch@lists.debian.org>\n"
+"Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Gtranslator 2.91.6\n"
 
 #. Type: boolean
 #. Description
 #: ../kismet.templates:2001
 msgid "Install Kismet \"setuid root\"?"
-msgstr "Installer Kismet »setuid root«?"
+msgstr "Kismet installeren met \"setuid root\"?"
 
 #. Type: boolean
 #. Description
@@ -33,12 +35,14 @@ msgid ""
 "will allow it to grant these privileges automatically to the processes that "
 "need them, excluding the user interface and packet decoding parts."
 msgstr ""
-"Kismet kræver root-privileiger for nogle af dets funktioner. Kørsel af "
-"programmet som root (»sudo kismet«) anbefales ikke, da kørsel af hele koden "
-"med hævede privilegier øger risikoen for at fejl medfører systemskade. I "
-"stedet kan Kismet installeres med bitsættet »setuid«, som vil tillade "
-"programmet at give disse privilegier automatisk til processer, som skal "
-"bruge dem ekskluderende brugergrænsefladen og pakkeafkodningsdelene."
+"Voor sommige van zijn functies heeft Kismet systeembeheerdersrechten nodig. "
+"Toch is het niet aangewezen om het volledige programma uit te voeren met de "
+"systeembeheerdersrechten (\"sudo kismet\"). Dit verhoogt het risico dat een "
+"programmeerfout schade aanricht in het ganse systeem. In plaats daarvan kan "
+"Kismet geïnstalleerd worden met een ingestelde \"setuid-bit\". Dit laat het "
+"programma toe om automatisch systeembeheerdersrechten toe te kennen aan de "
+"processen die dit nodig hebben, met uitsluiting van de gebruikersinterface "
+"en de onderdelen voor het decoderen van pakketten."
 
 #. Type: boolean
 #. Description
@@ -48,9 +52,10 @@ msgid ""
 "(and capture packets, change wireless card state, etc), so only thoroughly "
 "trusted users should be granted membership of the group."
 msgstr ""
-"Aktivering af denne funktion giver brugere i gruppen »kismet« mulighed for "
-"at køre Kismet (og opfange pakker, ændre trådløs korttilstand etc.) så kun "
-"absolut troværdige brugere bør få medlemskab i denne gruppe."
+"Deze functionaliteit activeren laat gebruikers uit de groep \"kismet\" toe "
+"om Kismet uit te voeren (en pakketten te onderscheppen, de toestand van de "
+"draadloze netwerkkaart te wijzigen, enz.). Daarom is het aangewezen om dit "
+"groepslidmaatschap enkel aan heel betrouwbare gebruikers toe te kennen."
 
 #. Type: boolean
 #. Description
@@ -60,22 +65,24 @@ msgid ""
 "(\"Suidroot & Security\"), which can be found at /usr/share/doc/kismet/"
 "README or \"http://www.kismetwireless.net/README\"."
 msgstr ""
-"For mere detaljeret information så se afsnit 4 i Kismet README (»Suidroot & "
-"Security«), som kan findes på /usr/share/doc/kismet/README eller »http://www."
-"kismetwireless.net/README«."
+"Meer uitgebreide informatie vindt u in sectie 4 (\"Suidroot & Security\") "
+"van het README-bestand van Kismet. U vindt dit document op /usr/share/doc/"
+"kismet/README of \"http://www.kismetwireless.net/README\"."
 
 #. Type: string
 #. Description
 #: ../kismet.templates:3001
 msgid "Users to add to the kismet group:"
-msgstr "Brugere der skal tilføjes til gruppen kismet:"
+msgstr "Gebruikers die aan de groep kismet toegevoegd moeten worden:"
 
 #. Type: string
 #. Description
 #: ../kismet.templates:3001
 msgid ""
 "Only users in the kismet group are able to use kismet under the setuid model."
-msgstr "Kun brugere i gruppen kismet kan bruge kismet under setuid-modellen."
+msgstr ""
+"Enkel gebruikers die tot de kismet-groep behoren, kunnen kismet gebruiken "
+"volgens het setuid-model."
 
 #. Type: string
 #. Description
@@ -83,8 +90,8 @@ msgstr "Kun brugere i gruppen kismet kan bruge kismet under setuid-modellen."
 msgid ""
 "Please specify the users to be added to the group, as a space-separated list."
 msgstr ""
-"Angiv venligst brugerne der skal tilføjes til gruppen, som en "
-"mellemrumsadskilt liste."
+"Vermeld de gebruikers die aan de groep toegevoegd moeten worden in een lijst "
+"met spatie als het scheidingsteken."
 
 #. Type: string
 #. Description
@@ -93,14 +100,14 @@ msgid ""
 "Note that currently logged-in users who are added to a group will typically "
 "need to log out and log in again before it is recognized."
 msgstr ""
-"Bemærk at aktuelt indloggede brugere som tilføjes til en gruppe vil typisk "
-"skulle logge ud og logge ind igen før ændringen slår igennem."
+"Merk op dat aangemelde gebruikers die aan een groep toegevoegd worden zich "
+"eerst moeten afmelden en nadien weer aanmelden vooraleer dit effect heeft."
 
 #. Type: error
 #. Description
 #: ../kismet.templates:4001
 msgid "The provided user list contains invalid usernames."
-msgstr "Brugerlisten indeholder ugyldige brugernavn."
+msgstr "De opgegeven gebruikerslijst bevat ongeldige gebruikersnamen."
 
 #. Type: error
 #. Description
@@ -110,7 +117,7 @@ msgid ""
 "separated list of usernames. It seems that the following usernames are not "
 "valid: ${USERS}. Please revise the list."
 msgstr ""
-"Brugerne som skal tilføjes til gruppen kismet skal være i en mellemrums-"
-"adskilt liste med brugernavne. Det ser ud til, at de følgende brugernavne "
-"ikke er gyldige: ${USERS}. Revider venligst listen."
-
+"De gebruikers die aan de kismet-groep toegevoegd moeten worden, moeten "
+"vermeld worden in een lijst van door spaties gescheiden gebruikersnamen. Het "
+"lijkt erop dat de volgende gebruikersnamen niet geldig zijn: ${USERS}. "
+"Gelieve de lijst te herzien."

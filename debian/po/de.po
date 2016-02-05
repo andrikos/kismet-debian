@@ -1,14 +1,14 @@
 # German debconf translation of kismet.
 # Copyright (C) 2012 THE kismet'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the kismet package.
-# Translation by Chris Leick <c.leick@vollbio.de> 2012.
+# Translation by Chris Leick <c.leick@vollbio.de> 2012-2015.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: kismet 2011.03R2-1\n"
+"Project-Id-Version: kismet 2013.03.R1b-4\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
 "POT-Creation-Date: 2015-11-04 05:39+0100\n"
-"PO-Revision-Date: 2012-11-13 22:31+0100\n"
+"PO-Revision-Date: 2015-11-07 09:30+0100\n"
 "Last-Translator: Chris Leick <c.leick@vollbio.de>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "Language: de\n"
@@ -106,7 +106,7 @@ msgstr ""
 #. Description
 #: ../kismet.templates:4001
 msgid "The provided user list contains invalid usernames."
-msgstr ""
+msgstr "Die bereitgestellte Benutzerliste enthält ungültige Benutzernamen."
 
 #. Type: error
 #. Description
@@ -116,3 +116,7 @@ msgid ""
 "separated list of usernames. It seems that the following usernames are not "
 "valid: ${USERS}. Please revise the list."
 msgstr ""
+"Die Benutzer, die zur Gruppe »kismet« hinzugefügt werden sollen, müssen in "
+"einer durch Leerzeichen getrennten Liste bereitgestellt werden. Es scheint, "
+"dass die folgenden Benutzernamen ungültig sind: ${USERS}. Bitte überarbeiten "
+"Sie die Liste."

@@ -1,13 +1,13 @@
 # Italian translation of kismet debconf messages.
 # Copyright (C) 2012, Beatrice Torracca
 # This file is distributed under the same license as the kismet package.
-# Beatrice Torracca <beatricet@libero.it>, 2012.
+# Beatrice Torracca <beatricet@libero.it>, 2012, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: kismet\n"
 "Report-Msgid-Bugs-To: kismet@packages.debian.org\n"
 "POT-Creation-Date: 2015-11-04 05:39+0100\n"
-"PO-Revision-Date: 2012-11-19 21:17+0200\n"
+"PO-Revision-Date: 2015-11-15 11:05+0200\n"
 "Last-Translator: Beatrice Torracca <beatricet@libero.it>\n"
 "Language-Team: Italian <debian-l10n-italian@lists.debian.org>\n"
 "Language: it\n"
@@ -98,14 +98,14 @@ msgid ""
 "need to log out and log in again before it is recognized."
 msgstr ""
 "Notare che gli utenti attualmente connessi che vengono aggiunti ad un gruppo "
-"solitamente devono disconnettersi e riconnettersi prima che la modifica "
-"abbia effetto."
+"solitamente devono disconnettersi e riconnettersi prima che ciò abbia "
+"effetto."
 
 #. Type: error
 #. Description
 #: ../kismet.templates:4001
 msgid "The provided user list contains invalid usernames."
-msgstr ""
+msgstr "La lista di utenti fornita contiene nomi utente non validi."
 
 #. Type: error
 #. Description
@@ -115,3 +115,7 @@ msgid ""
 "separated list of usernames. It seems that the following usernames are not "
 "valid: ${USERS}. Please revise the list."
 msgstr ""
+"Gli utenti da aggiungere al gruppo kismet devono essere specificati in una "
+"lista di nomi utente separati da spazi. I seguenti nomi utente sembrano non "
+"validi: ${USERS}.\n"
+"Controllare la lista."

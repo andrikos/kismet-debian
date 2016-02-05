@@ -23,6 +23,14 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
       + Add appropriate entry in kismet.templates
       + Update kismet.config to perform the checks
     - Update po-debconf
+      + Add Dutch translation (Closes: #765414, #805045)
+      + Update Russian translation (Closes: #804057)
+      + Update Danish translation (Closes: #804085)
+      + Update German translation (Closes: #804410)
+      + Update Czech translation (Closes: #804657)
+      + Update Dutch translation (Closes: #805045)
+      + Update Italian translation (Closes: #805147)
+      + Update French translation (Closes: #805887)
 
  -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
 
