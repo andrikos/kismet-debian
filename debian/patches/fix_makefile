@@ -1,8 +1,8 @@
 Allow different compile arguments to be used for programs and plugins
-Index: kismet-debian/Makefile.inc.in
+Index: b/Makefile.inc.in
 ===================================================================
---- kismet-debian.orig/Makefile.inc.in	2013-04-21 18:02:12.468943137 +0200
-+++ kismet-debian/Makefile.inc.in	2013-04-21 18:24:15.772306961 +0200
+--- a/Makefile.inc.in
++++ b/Makefile.inc.in
 @@ -23,7 +23,7 @@
  CLIBS   	= @CLIBS@
  CXXLIBS		= @CXXLIBS@
@@ -20,10 +20,10 @@ Index: kismet-debian/Makefile.inc.in
 +PLUGINLDFLAGS  = @PLUGINLDFLAGS@
 +PLUGINCXXFLAGS = @PLUGINCXXFLAGS@
  
-Index: kismet-debian/client-plugin-example/Makefile
+Index: b/client-plugin-example/Makefile
 ===================================================================
---- kismet-debian.orig/client-plugin-example/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/client-plugin-example/Makefile	2013-04-21 18:11:11.530166215 +0200
+--- a/client-plugin-example/Makefile
++++ b/client-plugin-example/Makefile
 @@ -13,7 +13,7 @@
  LDFLAGS	= -shared -rdynamic
  LIBS	= -lstdc++ 
@@ -38,13 +38,13 @@ Index: kismet-debian/client-plugin-example/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/configure
+Index: b/configure
 ===================================================================
---- kismet-debian.orig/configure	2013-04-21 18:18:27.520685076 +0200
-+++ kismet-debian/configure	2013-04-21 18:29:49.716108718 +0200
+--- a/configure
++++ b/configure
 @@ -652,6 +652,7 @@
  EGREP
  GREP
@@ -53,10 +53,10 @@ Index: kismet-debian/configure
  PLUGINLDFLAGS
  CPP
  SET_MAKE
-Index: kismet-debian/disable-plugin-dot15d4/Makefile
+Index: b/disable-plugin-dot15d4/Makefile
 ===================================================================
---- kismet-debian.orig/disable-plugin-dot15d4/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/disable-plugin-dot15d4/Makefile	2013-04-21 18:11:11.542166069 +0200
+--- a/disable-plugin-dot15d4/Makefile
++++ b/disable-plugin-dot15d4/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ -lusb -lpthread
@@ -71,13 +71,13 @@ Index: kismet-debian/disable-plugin-dot15d4/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/plugin-alertsyslog/Makefile
+Index: b/plugin-alertsyslog/Makefile
 ===================================================================
---- kismet-debian.orig/plugin-alertsyslog/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/plugin-alertsyslog/Makefile	2013-04-21 18:11:40.681799734 +0200
+--- a/plugin-alertsyslog/Makefile
++++ b/plugin-alertsyslog/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ 
@@ -92,13 +92,13 @@ Index: kismet-debian/plugin-alertsyslog/Makefile
  
  .cc.o:
 -	$(CXX) $(CXXFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/plugin-btscan/Makefile
+Index: b/plugin-btscan/Makefile
 ===================================================================
---- kismet-debian.orig/plugin-btscan/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/plugin-btscan/Makefile	2013-04-21 18:11:11.542166069 +0200
+--- a/plugin-btscan/Makefile
++++ b/plugin-btscan/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ -lbluetooth -lpthread
@@ -113,13 +113,13 @@ Index: kismet-debian/plugin-btscan/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/plugin-spectools/Makefile
+Index: b/plugin-spectools/Makefile
 ===================================================================
---- kismet-debian.orig/plugin-spectools/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/plugin-spectools/Makefile	2013-04-21 18:11:11.542166069 +0200
+--- a/plugin-spectools/Makefile
++++ b/plugin-spectools/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ 
@@ -134,13 +134,13 @@ Index: kismet-debian/plugin-spectools/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/plugin-syslog/Makefile
+Index: b/plugin-syslog/Makefile
 ===================================================================
---- kismet-debian.orig/plugin-syslog/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/plugin-syslog/Makefile	2013-04-21 18:11:11.542166069 +0200
+--- a/plugin-syslog/Makefile
++++ b/plugin-syslog/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ 
@@ -155,13 +155,13 @@ Index: kismet-debian/plugin-syslog/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/restricted-plugin-autowep/Makefile
+Index: b/restricted-plugin-autowep/Makefile
 ===================================================================
---- kismet-debian.orig/restricted-plugin-autowep/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/restricted-plugin-autowep/Makefile	2013-04-21 18:11:11.550165968 +0200
+--- a/restricted-plugin-autowep/Makefile
++++ b/restricted-plugin-autowep/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ 
@@ -176,13 +176,13 @@ Index: kismet-debian/restricted-plugin-autowep/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/restricted-plugin-ptw/Makefile
+Index: b/restricted-plugin-ptw/Makefile
 ===================================================================
---- kismet-debian.orig/restricted-plugin-ptw/Makefile	2013-03-25 18:29:11.000000000 +0100
-+++ kismet-debian/restricted-plugin-ptw/Makefile	2013-04-21 18:11:11.570165716 +0200
+--- a/restricted-plugin-ptw/Makefile
++++ b/restricted-plugin-ptw/Makefile
 @@ -10,7 +10,7 @@
  PLUGINLDFLAGS += -shared -rdynamic
  LIBS	+= -lstdc++ -lssl -lpthread -lcrypto
@@ -197,14 +197,14 @@ Index: kismet-debian/restricted-plugin-ptw/Makefile
  
  .cc.o:
 -	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $*.cc -o $@ 
-+	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@ 
++	$(CXX) $(CPPFLAGS) $(PLUGINCXXFLAGS) -c $*.cc -o $@
  
  .SUFFIXES: .c .cc .o
-Index: kismet-debian/configure.in
+Index: b/configure.ac
 ===================================================================
---- kismet-debian.orig/configure.in	2013-04-21 18:18:27.520685076 +0200
-+++ kismet-debian/configure.in	2013-04-21 18:29:27.604386699 +0200
-@@ -156,6 +156,7 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -159,6 +159,7 @@
  
  # Substitute in the objc linkages if we need them
  AC_SUBST(PLUGINLDFLAGS)

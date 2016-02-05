@@ -1,8 +1,8 @@
 Fix some minor issues in the manpages
-Index: kismet-2011-03-R2/man/kismet.1
+Index: b/man/kismet.1
 ===================================================================
---- kismet-2011-03-R2.orig/man/kismet.1	2012-11-06 04:05:54.236559274 +0100
-+++ kismet-2011-03-R2/man/kismet.1	2012-12-02 06:13:25.230770351 +0100
+--- a/man/kismet.1
++++ b/man/kismet.1
 @@ -1,4 +1,4 @@
 -.Dd April 2004
 +.Dd April 03, 2004

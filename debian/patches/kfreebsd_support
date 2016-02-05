@@ -1,9 +1,9 @@
 Add support for kfreebsd architecture
-Index: kismet-debian/configure.in
+Index: b/configure.ac
 ===================================================================
---- kismet-debian.orig/configure.in	2013-04-21 18:23:32.224854426 +0200
-+++ kismet-debian/configure.in	2013-04-21 18:26:20.310741300 +0200
-@@ -65,7 +65,7 @@
+--- a/configure.ac
++++ b/configure.ac
+@@ -68,7 +68,7 @@
  		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS)
          linux="yes"
  		;;
@@ -12,7 +12,7 @@ Index: kismet-debian/configure.in
  		AC_MSG_RESULT(none needed)
  		AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD)
  		bsd="yes"
-@@ -126,7 +126,7 @@
+@@ -129,7 +129,7 @@
  		AC_DEFINE(SYS_LINUX, 1, Compiling for Linux OS)
          linux="yes"
  		;;
@@ -21,10 +21,10 @@ Index: kismet-debian/configure.in
          AC_MSG_RESULT(none needed)
          AC_DEFINE(SYS_FREEBSD, 1, Compiling for FreeBSD)
  		bsd="yes"
-Index: kismet-debian/packetsource_bsdrt.cc
+Index: b/packetsource_bsdrt.cc
 ===================================================================
---- kismet-debian.orig/packetsource_bsdrt.cc	2013-04-21 18:23:32.224854426 +0200
-+++ kismet-debian/packetsource_bsdrt.cc	2013-04-21 18:26:20.310741300 +0200
+--- a/packetsource_bsdrt.cc
++++ b/packetsource_bsdrt.cc
 @@ -27,6 +27,10 @@
  #include <net80211/ieee80211_ioctl.h>
  #endif
@@ -36,10 +36,10 @@ Index: kismet-debian/packetsource_bsdrt.cc
  #if (defined(HAVE_LIBPCAP) && (defined(SYS_OPENBSD) || defined(SYS_NETBSD) || \
  							   defined(SYS_FREEBSD)))
  
-Index: kismet-debian/packetsource_pcap.cc
+Index: b/packetsource_pcap.cc
 ===================================================================
---- kismet-debian.orig/packetsource_pcap.cc	2013-04-21 18:23:32.224854426 +0200
-+++ kismet-debian/packetsource_pcap.cc	2013-04-21 18:26:20.310741300 +0200
+--- a/packetsource_pcap.cc
++++ b/packetsource_pcap.cc
 @@ -72,6 +72,7 @@
  #include <sys/socket.h>
  #include <net/if.h>
@@ -48,10 +48,10 @@ Index: kismet-debian/packetsource_pcap.cc
  
  #ifdef HAVE_RADIOTAP
  #include <net80211/ieee80211_ioctl.h>
-Index: kismet-debian/configure
+Index: b/configure
 ===================================================================
---- kismet-debian.orig/configure	2013-04-21 18:23:32.224854426 +0200
-+++ kismet-debian/configure	2013-04-21 18:29:12.812572658 +0200
+--- a/configure
++++ b/configure
 @@ -3710,7 +3710,7 @@
  
          linux="yes"
