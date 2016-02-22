@@ -3,6 +3,7 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
   * New upstream release (Closes: #813801)
   * debian/patches
     - Add fix_typos patch to correct some spelling errors
+    - Update kfreebsd_support in order to fix a FTBFS
     - Refresh existing patches
   * debian/control
     - Bump policy to 3.9.6

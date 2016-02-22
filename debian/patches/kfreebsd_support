@@ -70,3 +70,27 @@ Index: b/configure
          { $as_echo "$as_me:${as_lineno-$LINENO}: result: none needed" >&5
  $as_echo "none needed" >&6; }
  
+Index: b/ifcontrol.h
+===================================================================
+--- a/ifcontrol.h
++++ b/ifcontrol.h
+@@ -36,6 +36,7 @@
+ #endif
+ 
+ #ifndef SYS_CYGWIN
++#include <stdint.h>
+ #include <net/if_arp.h>
+ #include <sys/ioctl.h>
+ #include <netinet/in.h>
+Index: b/iwcontrol.cc
+===================================================================
+--- a/iwcontrol.cc
++++ b/iwcontrol.cc
+@@ -20,6 +20,7 @@
+ #include "iwcontrol.h"
+ 
+ #ifdef SYS_LINUX
++#include <stdint.h>
+ #include <net/if_arp.h>
+ #include <sys/socket.h>
+ #include <sys/ioctl.h>
