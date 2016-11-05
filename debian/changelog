@@ -1,4 +1,4 @@
-kismet (2016.07.R1-1) UNRELEASED; urgency=medium
+kismet (2016.07.R1-1) unstable; urgency=medium
 
   * New upstream release (Closes: #835390)
   * Po-debconf translations
