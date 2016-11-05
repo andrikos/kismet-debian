@@ -52,7 +52,7 @@ Index: b/configure
 ===================================================================
 --- a/configure
 +++ b/configure
-@@ -3710,7 +3710,7 @@
+@@ -3822,7 +3822,7 @@
  
          linux="yes"
  		;;
@@ -61,7 +61,7 @@ Index: b/configure
  		{ $as_echo "$as_me:${as_lineno-$LINENO}: result: none needed" >&5
  $as_echo "none needed" >&6; }
  
-@@ -3794,7 +3794,7 @@
+@@ -3906,7 +3906,7 @@
  
          linux="yes"
  		;;
