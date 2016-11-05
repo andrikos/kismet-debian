@@ -51,3 +51,133 @@ Index: b/man/kismet_drone.1
  kismet system.  Standard SSH packet tunneling or any other tunneling/forwarding system
  may be used, and is recommended.
  .SH SEE ALSO
+Index: b/disable-plugin-dot15d4/packetsource_serialdev.cc
+===================================================================
+--- a/disable-plugin-dot15d4/packetsource_serialdev.cc
++++ b/disable-plugin-dot15d4/packetsource_serialdev.cc
+@@ -139,7 +139,7 @@
+ 
+ 	buf[len] = '\0';
+ 
+-	// State inherited from previous read incase we get a partial
++	// State inherited from previous read in case we get a partial
+ 	for (unsigned int b = 0; b < rlen; b++) {
+ 		// fprintf(stderr, "debug - %d of %d state %d %x %c\n", b, rlen, state, buf[b], buf[b]);
+ 		if (state == 1) {
+Index: b/docs/README.newcore
+===================================================================
+--- a/docs/README.newcore
++++ b/docs/README.newcore
+@@ -305,7 +305,7 @@
+ If you don't need root to control the source, don't specify it on the proto 
+ registration - it'll only create overhead.
+ 
+-Most kismet sources support a grace period when setting the channel, incase a 
++Most kismet sources support a grace period when setting the channel, in case a
+ card has a momentary hiccup.  I usually use 5 consecutive errors as an indication
+ it's really broken and don't return a fail condition on SetChannel until I hit
+ that.
+Index: b/kis_panel_details.cc
+===================================================================
+--- a/kis_panel_details.cc
++++ b/kis_panel_details.cc
+@@ -378,7 +378,7 @@
+ 	if (net == NULL && dng != NULL)
+ 		net = dng->FetchNetwork();
+ 
+-	// Catch nulls just incase
++	// Catch nulls just in case
+ 	if (net == NULL)
+ 		return 0;
+ 
+Index: b/kis_panel_network.cc
+===================================================================
+--- a/kis_panel_network.cc
++++ b/kis_panel_network.cc
+@@ -548,7 +548,7 @@
+ 	// Remove the timer
+ 	globalreg->timetracker->RemoveTimer(updateref);
+ 	
+-	// TODO - clean up the display vector incase for some reason we're being
++	// TODO - clean up the display vector in case for some reason we're being
+ 	// destroyed without exiting the program
+ }
+ 
+Index: b/nl80211_control.h
+===================================================================
+--- a/nl80211_control.h
++++ b/nl80211_control.h
+@@ -21,7 +21,7 @@
+ #ifndef __NL80211_CONFIG__
+ #define __NL80211_CONFIG__
+ 
+-// Use our own defines incase we don't have nl80211
++// Use our own defines in case we don't have nl80211
+ #define nl80211_mntr_flag_none		0
+ #define nl80211_mntr_flag_fcsfail	1
+ #define nl80211_mntr_flag_plcpfail	2
+Index: b/packetchain.cc
+===================================================================
+--- a/packetchain.cc
++++ b/packetchain.cc
+@@ -89,7 +89,7 @@
+     kis_packet *newpack = new kis_packet;
+     pc_link *pcl;
+ 
+-    // Run the frame through the genesis chain incase anything
++    // Run the frame through the genesis chain in case anything
+     // needs to add something at the beginning
+     for (unsigned int x = 0; x < genesis_chain.size(); x++) {
+         pcl = genesis_chain[x];
+Index: b/packetsource_wext.cc
+===================================================================
+--- a/packetsource_wext.cc
++++ b/packetsource_wext.cc
+@@ -84,7 +84,7 @@
+ 			"; This driver does not provide monitor-mode support (which is "
+ 			"required by Kismet)  Try the in-kernel open source drivers for "
+ 			"the Broadcom cards.  Kismet will continue to attempt to use "
+-			"this card incase the drivers have recently added support, but "
++			"this card in case the drivers have recently added support, but "
+ 			"this will probably fail.";
+ 		_MSG(warning, MSGFLAG_PRINTERROR);
+ 	}
+Index: b/restricted-plugin-autowep/autowep-kismet.cc
+===================================================================
+--- a/restricted-plugin-autowep/autowep-kismet.cc
++++ b/restricted-plugin-autowep/autowep-kismet.cc
+@@ -311,7 +311,7 @@
+ 	if (decrypted == NULL) {
+ 		// Brute force the other keys, but only a few times!  Otherwise we're
+ 		// doing 10x decrypts on every packet.  We only try the other keys the
+-		// first N data packets we see.  This is incase the wired mac used
++		// first N data packets we see.  This is in case the wired mac used
+ 		// to derive the key is an actiontec OUI but not the same OUI
+ 		// as the wireless
+ 		if (nmi->second->key_failed < 5) {
+Index: b/kismet_drone.cc
+===================================================================
+--- a/kismet_drone.cc
++++ b/kismet_drone.cc
+@@ -254,7 +254,7 @@
+ 		   "     --no-line-wrap           Turn of linewrapping of output\n"
+ 		   "                              (for grep, speed, etc)\n"
+ 		   " -s, --silent                 Turn off stdout output after setup phase\n"
+-		   "     --daemonize              Spawn detatched in the background\n"
++		   "     --daemonize              Spawn detached in the background\n"
+ 		   );
+ 
+ 	printf("\n");
+Index: b/kismet_server.cc
+===================================================================
+--- a/kismet_server.cc
++++ b/kismet_server.cc
+@@ -598,7 +598,7 @@
+ 		   "     --no-line-wrap           Turn of linewrapping of output\n"
+ 		   "                              (for grep, speed, etc)\n"
+ 		   " -s, --silent                 Turn off stdout output after setup phase\n"
+-		   "     --daemonize              Spawn detatched in the background\n"
++		   "     --daemonize              Spawn detached in the background\n"
+ 		   "     --no-plugins             Do not load plugins\n"
+ 		   "     --no-root				  Do not start the kismet_capture binary \n"
+ 		   "                               when not running as root.  For no-priv \n"

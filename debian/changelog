@@ -6,6 +6,7 @@ kismet (2016.07.R1-1) UNRELEASED; urgency=medium
   * debian/patches
     - Add openssl_1.1.0_port to make buildable with OpenSSL 1.1.0
       (Closes: #828365)
+    - Update fix_typos in order to correct additional typos
     - Refresh existing patches
   * debian/control
     - Bump policy to 3.9.8
