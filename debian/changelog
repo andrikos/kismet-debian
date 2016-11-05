@@ -1,4 +1,4 @@
-kismet (2016.01.R1-1) UNRELEASED; urgency=medium
+kismet (2016.01.R1-1) unstable; urgency=medium
 
   * New upstream release (Closes: #813801)
   * debian/patches
@@ -33,7 +33,7 @@ kismet (2016.01.R1-1) UNRELEASED; urgency=medium
       + Update Italian translation (Closes: #805147)
       + Update French translation (Closes: #805887)
 
- -- Nick Andrik <nick.andrik@gmail.com>  Fri, 05 Feb 2016 22:12:48 +0100
+ -- Nick Andrik <nick.andrik@gmail.com>  Sat, 06 Feb 2016 01:04:04 +0100
 
 kismet (2013.03.R1b-3) unstable; urgency=low
 
