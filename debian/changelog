@@ -1,6 +1,8 @@
 kismet (2016.07.R1-1) UNRELEASED; urgency=medium
 
   * New upstream release (Closes: #835390)
+  * Po-debconf translations
+    - Update Japanese translation (Closes: #819600)
 
  -- Nick Andrik <nick.andrik@gmail.com>  Sat, 05 Nov 2016 02:04:15 +0100
 
