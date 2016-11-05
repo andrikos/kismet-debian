@@ -4,6 +4,8 @@ kismet (2016.07.R1-1) UNRELEASED; urgency=medium
   * Po-debconf translations
     - Update Japanese translation (Closes: #819600)
   * debian/patches
+    - Add openssl_1.1.0_port to make buildable with OpenSSL 1.1.0
+      (Closes: #828365)
     - Refresh existing patches
 
  -- Nick Andrik <nick.andrik@gmail.com>  Sat, 05 Nov 2016 02:04:15 +0100
