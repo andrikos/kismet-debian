@@ -30,7 +30,6 @@ clean::
 	[ ! -f Makefile ] || $(DEB_MAKE_INVOKE) distclean
 	debconf-updatepo
 	
-configure/kismet:: CFLAGS := $(DEB_CFLAGS_MAINT_PREPEND) $(call nopie,CXXFLAGS)
 configure/kismet::
 	$(DEB_MAKE_INVOKE) dep
 
